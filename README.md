@@ -23,7 +23,17 @@ Construir um MVP baseado em Raspberry Pi capaz de:
 - `hardware/` documentação de hardware e integrações futuras com Arduino
 - `assets/` imagens, diagramas e recursos multimídia
 - `experiments/` protótipos e testes rápidos
-- `scripts/` instalação e execução do projeto na Raspberry Pi
+- `scripts/` instalação, diagnóstico e execução na Raspberry Pi
+
+## Funcionalidades já presentes
+- simulador CLI
+- respostas híbridas: regras locais + Ollama
+- STT com `faster-whisper`
+- TTS com `espeak-ng`
+- modo demo
+- scripts de diagnóstico e teste de áudio
+- instalador inicial para Raspberry Pi
+- instalador de serviço `systemd` em modo demo
 
 ## Roadmap resumido
 1. Documentação e arquitetura inicial
@@ -40,10 +50,10 @@ Construir um MVP baseado em Raspberry Pi capaz de:
 - Ollama com `qwen2.5:0.5b`
 - espeak-ng para TTS inicial
 - gpiozero
-- systemd no futuro para execução automática
+- systemd para execução automática em demo
 
 ## Instalação na Raspberry Pi
 Veja `docs/raspberry-install.md`.
 
 ## Status
-Em desenvolvimento inicial com simulador CLI, STT/TTS básicos e integração com Ollama.
+Em desenvolvimento inicial com simulador CLI, STT/TTS básicos, integração com Ollama, modo demo e automação inicial de instalação.

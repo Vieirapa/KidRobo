@@ -15,33 +15,40 @@
 
 ## Etapa 3 — Áudio no Raspberry Pi
 - integrar captura de microfone
+- integrar STT real
+- integrar TTS real
+- criar scripts de teste de áudio e diagnóstico
+
+## Etapa 4 — Operação embarcada inicial
+- criar modo demo
+- criar scripts de instalação na Raspberry Pi
+- instalar serviço `systemd` do usuário
+- validar execução automática
+
+## Etapa 5 — Wake word real
 - integrar wake word
-- integrar VAD
-- reproduzir beep e resposta TTS
+- reduzir falso positivo
+- ajustar experiência de ativação
 
-## Etapa 4 — STT real
-- integrar faster-whisper
-- medir latência
-- ajustar tempo máximo de captura
-
-## Etapa 5 — Resposta híbrida
+## Etapa 6 — Resposta híbrida
 - manter intents básicas locais
 - usar Ollama para respostas abertas curtas
 - aplicar filtro infantil sempre
 
-## Etapa 6 — Expressão física
+## Etapa 7 — Expressão física
 - LED RGB para status
 - botão opcional
 - logs de transição de estado
 
-## Etapa 7 — Primeiro teste de campo
+## Etapa 8 — Primeiro teste de campo
 - testar com perguntas simples
 - medir tempo de resposta
 - ajustar volume, microfone e ruído ambiente
 
 ## Critério de pronto do primeiro teste
-- wake word funcional
+- diagnóstico funcional
 - transcrição aceitável
 - resposta híbrida estável
 - TTS inteligível
+- demo operacional
 - loop completo sem travamentos

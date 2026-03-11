@@ -30,6 +30,7 @@ sudo apt-get install -y \
   curl \
   ffmpeg \
   espeak-ng \
+  alsa-utils \
   portaudio19-dev \
   python3-venv \
   python3-dev \
@@ -68,7 +69,13 @@ fi
 log "Baixando modelo do Ollama: $MODEL"
 ollama pull "$MODEL"
 
+log "Ajustando permissões dos scripts"
+chmod +x "$INSTALL_DIR"/scripts/*.sh
+
 log "Instalação concluída"
 echo "Repositório: $INSTALL_DIR"
 echo "Ative o ambiente: source $VENV_DIR/bin/activate"
-echo "Execute o KidRobo: cd $INSTALL_DIR/software && python -m app.main"
+echo "Diagnóstico: $INSTALL_DIR/scripts/diagnose_kidrobo.sh"
+echo "Teste de áudio: $INSTALL_DIR/scripts/test_audio.sh"
+echo "Demo: $INSTALL_DIR/scripts/run_kidrobo.sh --mode demo"
+echo "CLI: cd $INSTALL_DIR/software && python -m app.main"

@@ -14,7 +14,7 @@ Entrar na Raspberry Pi via SSH e executar:
 ```bash
 git clone git@github.com:Vieirapa/KidRobo.git
 cd KidRobo
-chmod +x scripts/install_kidrobo_rpi.sh scripts/run_kidrobo.sh scripts/bootstrap_from_github.sh
+chmod +x scripts/*.sh
 ./scripts/install_kidrobo_rpi.sh git@github.com:Vieirapa/KidRobo.git
 ```
 
@@ -25,14 +25,43 @@ chmod +x scripts/install_kidrobo_rpi.sh scripts/run_kidrobo.sh scripts/bootstrap
 - instala dependências Python
 - instala o Ollama, se necessário
 - baixa o modelo `qwen2.5:0.5b`
+- ajusta permissões dos scripts auxiliares
+
+## Diagnóstico após instalação
+```bash
+./scripts/diagnose_kidrobo.sh
+```
+
+## Teste de áudio e STT
+```bash
+./scripts/test_audio.sh
+```
 
 ## Executando o KidRobo
+### modo CLI
 ```bash
 ./scripts/run_kidrobo.sh
 ```
 
+### modo demo
+```bash
+./scripts/run_kidrobo.sh --mode demo
+```
+
+### modo demo em loop
+```bash
+./scripts/run_kidrobo.sh --mode demo --loop
+```
+
+## Instalar serviço systemd do usuário
+```bash
+./scripts/install_systemd_service.sh
+systemctl --user start kidrobo.service
+journalctl --user -u kidrobo.service -f
+```
+
 ## Observações
-- o script atual prepara a base do sistema, mas ainda não configura serviço `systemd` do KidRobo
+- o serviço `systemd` criado roda o KidRobo em modo demo contínuo
 - o TTS inicial usa `espeak-ng`
 - o STT usa `faster-whisper` com modelo `tiny`
-- conforme o projeto crescer, o script poderá instalar novos componentes automaticamente
+- conforme o projeto crescer, os scripts poderão instalar novos componentes automaticamente

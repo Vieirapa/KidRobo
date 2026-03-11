@@ -13,6 +13,7 @@ AUDIO_CHANNELS = 1
 AUDIO_RECORD_SECONDS = 5
 AUDIO_SILENCE_THRESHOLD = 0.015
 AUDIO_SILENCE_CHUNKS = 10
+AUDIO_TEST_FILE = "/tmp/kidrobo_test.wav"
 
 STT_MODEL_SIZE = "tiny"
 STT_COMPUTE_TYPE = "int8"
@@ -23,6 +24,12 @@ TTS_ENGINE = "espeak"
 TTS_VOICE = "pt-br"
 TTS_RATE = 145
 TTS_VOLUME = 170
+
+DEMO_PROMPTS = [
+    "Oi! Eu sou o KidRobo. Quer conversar comigo?",
+    "Você pode me perguntar meu nome ou pedir uma curiosidade.",
+    "Eu adoro aprender com crianças curiosas.",
+]
 
 SYSTEM_PROMPT = """Você é o KidRobo, um robô educacional amigável para crianças de 5 anos.
 Responda sempre em português do Brasil.

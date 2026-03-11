@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import argparse
+import time
 from pathlib import Path
 
 from app.audio.input import AudioInput
-from app.config import APP_NAME, ENABLE_TTS, OLLAMA_MODEL, WAKE_WORD
+from app.config import APP_NAME, DEMO_PROMPTS, ENABLE_TTS, OLLAMA_MODEL, WAKE_WORD
 from app.dialog.manager import DialogueManager
 from app.state_machine import RobotState
 from app.stt import FasterWhisperEngine
@@ -103,7 +105,44 @@ class KidRoboCLI:
                 self.state = RobotState.STANDBY
 
 
+class KidRoboDemo:
+    def __init__(self) -> None:
+        self.tts = None
+        if ENABLE_TTS:
+            try:
+                self.tts = TTSManager()
+            except Exception as exc:
+                print(f"[aviso] TTS indisponível no demo: {exc}")
+
+    def run(self, loop: bool = False, delay: float = 2.0) -> None:
+        print(f"{APP_NAME} iniciado em modo demo.")
+        while True:
+            for phrase in DEMO_PROMPTS:
+                print(f"KidRobo: {phrase}")
+                if self.tts:
+                    try:
+                        self.tts.say(phrase)
+                    except Exception as exc:
+                        print(f"[aviso] Falha no TTS: {exc}")
+                time.sleep(delay)
+            if not loop:
+                break
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="KidRobo")
+    parser.add_argument("--mode", choices=["cli", "demo"], default="cli")
+    parser.add_argument("--loop", action="store_true", help="Loop infinito no modo demo")
+    parser.add_argument("--delay", type=float, default=2.0, help="Pausa entre frases no modo demo")
+    return parser
+
+
 def main() -> None:
+    args = build_parser().parse_args()
+    if args.mode == "demo":
+        KidRoboDemo().run(loop=args.loop, delay=args.delay)
+        return
+
     app = KidRoboCLI()
     app.run()
 

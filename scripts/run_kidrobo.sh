@@ -7,4 +7,4 @@ VENV_DIR="$INSTALL_DIR/.venv"
 # shellcheck disable=SC1090
 source "$VENV_DIR/bin/activate"
 cd "$INSTALL_DIR/software"
-exec python -m app.main
+exec python -m app.main "$@"
