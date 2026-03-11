@@ -5,3 +5,4 @@ numpy
 piper-tts
 pyserial
 webrtcvad
+requests

@@ -6,9 +6,10 @@
 - preparar ambiente Python
 - definir contratos entre módulos
 
-## Etapa 2 — Simulador local
+## Etapa 2 — Simulador local com Ollama
 - criar máquina de estados
 - criar motor de intenções simples
+- integrar Ollama como fallback para perguntas abertas
 - simular eventos por texto no terminal
 - validar fluxo completo sem hardware real
 
@@ -23,10 +24,10 @@
 - medir latência
 - ajustar tempo máximo de captura
 
-## Etapa 5 — Resposta guiada
-- criar intents básicas
-- criar respostas infantis curtas
-- criar fallback seguro
+## Etapa 5 — Resposta híbrida
+- manter intents básicas locais
+- usar Ollama para respostas abertas curtas
+- aplicar filtro infantil sempre
 
 ## Etapa 6 — Expressão física
 - LED RGB para status
@@ -41,6 +42,6 @@
 ## Critério de pronto do primeiro teste
 - wake word funcional
 - transcrição aceitável
-- resposta local estável
+- resposta híbrida estável
 - TTS inteligível
 - loop completo sem travamentos
