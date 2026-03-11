@@ -2,7 +2,8 @@ gpiozero
 faster-whisper
 sounddevice
 numpy
-piper-tts
 pyserial
 webrtcvad
 requests
+ctranslate2<5
+av

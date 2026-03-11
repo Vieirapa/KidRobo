@@ -23,23 +23,27 @@ Construir um MVP baseado em Raspberry Pi capaz de:
 - `hardware/` documentação de hardware e integrações futuras com Arduino
 - `assets/` imagens, diagramas e recursos multimídia
 - `experiments/` protótipos e testes rápidos
+- `scripts/` instalação e execução do projeto na Raspberry Pi
 
 ## Roadmap resumido
 1. Documentação e arquitetura inicial
-2. MVP com wake word + STT + resposta guiada + TTS
+2. MVP com wake word + STT + resposta guiada/LLM + TTS
 3. Teste em Raspberry Pi
 4. LEDs, botão físico e pequenas expressões
 5. Integração opcional com Arduino
 6. Brincadeiras e interações guiadas
 
 ## Stack inicial sugerida
-- Raspberry Pi 5
+- Raspberry Pi 4 ou 5
 - Python 3.11+
-- OpenWakeWord
 - faster-whisper
-- Piper TTS
+- Ollama com `qwen2.5:0.5b`
+- espeak-ng para TTS inicial
 - gpiozero
-- systemd para execução automática
+- systemd no futuro para execução automática
+
+## Instalação na Raspberry Pi
+Veja `docs/raspberry-install.md`.
 
 ## Status
-Em planejamento e estruturação inicial.
+Em desenvolvimento inicial com simulador CLI, STT/TTS básicos e integração com Ollama.

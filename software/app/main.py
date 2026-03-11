@@ -1,14 +1,60 @@
 from __future__ import annotations
 
-from app.config import APP_NAME, WAKE_WORD, OLLAMA_MODEL
+from pathlib import Path
+
+from app.audio.input import AudioInput
+from app.config import APP_NAME, ENABLE_TTS, OLLAMA_MODEL, WAKE_WORD
 from app.dialog.manager import DialogueManager
 from app.state_machine import RobotState
+from app.stt import FasterWhisperEngine
+from app.tts import TTSManager
 
 
 class KidRoboCLI:
     def __init__(self) -> None:
         self.state = RobotState.STANDBY
         self.dialog = DialogueManager()
+        self.audio = AudioInput()
+        self.stt = None
+        self.tts = None
+        self.pending_text = ""
+        self.pending_response = ""
+        self.audio_file = Path("/tmp/kidrobo_input.wav")
+
+        try:
+            self.stt = FasterWhisperEngine()
+        except Exception as exc:
+            print(f"[aviso] STT indisponível no momento: {exc}")
+
+        if ENABLE_TTS:
+            try:
+                self.tts = TTSManager()
+            except Exception as exc:
+                print(f"[aviso] TTS indisponível no momento: {exc}")
+
+    def speak(self, text: str) -> None:
+        print(f"KidRobo: {text}\n")
+        if self.tts:
+            try:
+                self.tts.say(text)
+            except Exception as exc:
+                print(f"[aviso] Falha no TTS: {exc}")
+
+    def capture_text(self) -> str:
+        mode = input("[modo de escuta] digite 't' para texto ou 'a' para áudio > ").strip().lower()
+        if mode == "a":
+            if not self.stt:
+                print("[aviso] STT não está disponível; usando entrada por texto.")
+                return input("[criança] > ").strip()
+
+            print("[gravando] fale agora...")
+            audio_path = self.audio.record_until_silence(self.audio_file)
+            print(f"[gravado] arquivo salvo em {audio_path}")
+            recognized = self.stt.transcribe_file(audio_path)
+            print(f"[transcrevendo] Texto reconhecido: {recognized}")
+            return recognized
+
+        return input("[criança] > ").strip()
 
     def run(self) -> None:
         print(f"{APP_NAME} iniciado em modo CLI.")
@@ -28,11 +74,11 @@ class KidRoboCLI:
                     print("... aguardando wake word ...")
 
             elif self.state == RobotState.WAKE_DETECTED:
-                print("KidRobo: Oi! Estou ouvindo! Pode falar.")
+                self.speak("Oi! Estou ouvindo! Pode falar.")
                 self.state = RobotState.LISTENING
 
             elif self.state == RobotState.LISTENING:
-                user_text = input("[criança] > ").strip()
+                user_text = self.capture_text()
                 if not user_text:
                     self.state = RobotState.STANDBY
                 else:
@@ -40,7 +86,7 @@ class KidRoboCLI:
                     self.state = RobotState.TRANSCRIBING
 
             elif self.state == RobotState.TRANSCRIBING:
-                print(f"[transcrevendo] Texto reconhecido: {self.pending_text}")
+                print(f"[texto final] {self.pending_text}")
                 self.state = RobotState.THINKING
 
             elif self.state == RobotState.THINKING:
@@ -49,11 +95,11 @@ class KidRoboCLI:
                 self.state = RobotState.SPEAKING
 
             elif self.state == RobotState.SPEAKING:
-                print(f"KidRobo: {self.pending_response}\n")
+                self.speak(self.pending_response)
                 self.state = RobotState.STANDBY
 
             elif self.state == RobotState.ERROR:
-                print("KidRobo: Tive um probleminha. Vamos tentar de novo.")
+                self.speak("Tive um probleminha. Vamos tentar de novo.")
                 self.state = RobotState.STANDBY
 
 
