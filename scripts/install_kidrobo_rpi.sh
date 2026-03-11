@@ -34,7 +34,9 @@ sudo apt-get install -y \
   portaudio19-dev \
   python3-venv \
   python3-dev \
-  build-essential
+  build-essential \
+  feh \
+  fbi
 
 if [ ! -d "$INSTALL_DIR/.git" ]; then
   log "Clonando repositório $REPO_URL em $INSTALL_DIR"
@@ -79,3 +81,4 @@ echo "Diagnóstico: $INSTALL_DIR/scripts/diagnose_kidrobo.sh"
 echo "Teste de áudio: $INSTALL_DIR/scripts/test_audio.sh"
 echo "Demo: $INSTALL_DIR/scripts/run_kidrobo.sh --mode demo"
 echo "CLI: cd $INSTALL_DIR/software && python -m app.main"
+echo "Assets visuais: $INSTALL_DIR/assets/faces"

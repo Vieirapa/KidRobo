@@ -25,25 +25,33 @@
 - instalar serviço `systemd` do usuário
 - validar execução automática
 
-## Etapa 5 — Wake word real
+## Etapa 5 — Rosto em tela
+- suportar assets 800x480 por estado
+- alternar frames aleatórios por contexto
+- ligar estados de display ao fluxo do KidRobo
+- preparar renderização fullscreen via `feh` ou `fbi`
+
+## Etapa 6 — Wake word real
 - integrar wake word
 - reduzir falso positivo
 - ajustar experiência de ativação
 
-## Etapa 6 — Resposta híbrida
+## Etapa 7 — Resposta híbrida
 - manter intents básicas locais
 - usar Ollama para respostas abertas curtas
 - aplicar filtro infantil sempre
 
-## Etapa 7 — Expressão física
+## Etapa 8 — Expressão física
 - LED RGB para status
 - botão opcional
 - logs de transição de estado
+- toque na tela no futuro
 
-## Etapa 8 — Primeiro teste de campo
+## Etapa 9 — Primeiro teste de campo
 - testar com perguntas simples
 - medir tempo de resposta
 - ajustar volume, microfone e ruído ambiente
+- validar experiência visual na tela
 
 ## Critério de pronto do primeiro teste
 - diagnóstico funcional
@@ -51,4 +59,5 @@
 - resposta híbrida estável
 - TTS inteligível
 - demo operacional
+- estados visuais básicos funcionando
 - loop completo sem travamentos

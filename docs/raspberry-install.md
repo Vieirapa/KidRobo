@@ -20,6 +20,7 @@ chmod +x scripts/*.sh
 
 ## O que o script faz
 - instala dependências de sistema
+- instala ferramentas de display (`feh` e `fbi`)
 - clona ou atualiza o repositório
 - cria ambiente virtual Python
 - instala dependências Python
@@ -53,6 +54,12 @@ chmod +x scripts/*.sh
 ./scripts/run_kidrobo.sh --mode demo --loop
 ```
 
+## Sistema de rosto em tela
+- coloque as imagens em `assets/faces/<estado>/`
+- resolução recomendada: **800 x 480**
+- veja `assets/faces/README.md`
+- veja `docs/display-face-system.md`
+
 ## Instalar serviço systemd do usuário
 ```bash
 ./scripts/install_systemd_service.sh
@@ -64,4 +71,5 @@ journalctl --user -u kidrobo.service -f
 - o serviço `systemd` criado roda o KidRobo em modo demo contínuo
 - o TTS inicial usa `espeak-ng`
 - o STT usa `faster-whisper` com modelo `tiny`
+- o sistema já está preparado para estados visuais baseados em imagens full-screen
 - conforme o projeto crescer, os scripts poderão instalar novos componentes automaticamente

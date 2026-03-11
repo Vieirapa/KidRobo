@@ -25,6 +25,12 @@ TTS_VOICE = "pt-br"
 TTS_RATE = 145
 TTS_VOLUME = 170
 
+DISPLAY_ENABLED = False
+DISPLAY_WIDTH = 800
+DISPLAY_HEIGHT = 480
+DISPLAY_ASSETS_DIR = "assets/faces"
+DISPLAY_FRAME_DELAY_SECONDS = 0.6
+
 DEMO_PROMPTS = [
     "Oi! Eu sou o KidRobo. Quer conversar comigo?",
     "Você pode me perguntar meu nome ou pedir uma curiosidade.",

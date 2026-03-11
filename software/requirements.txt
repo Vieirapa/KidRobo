@@ -7,3 +7,4 @@ webrtcvad
 requests
 ctranslate2<5
 av
+Pillow
