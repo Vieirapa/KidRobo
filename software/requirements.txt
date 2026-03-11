@@ -1,0 +1,7 @@
+gpiozero
+faster-whisper
+sounddevice
+numpy
+piper-tts
+pyserial
+webrtcvad
