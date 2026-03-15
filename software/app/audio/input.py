@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import sounddevice as sd
+from sounddevice import PortAudioError
 
 try:
     import webrtcvad  # type: ignore
@@ -30,12 +31,34 @@ from app.config import (
 
 class AudioInput:
     def __init__(self, sample_rate: int = AUDIO_SAMPLE_RATE, channels: int = AUDIO_CHANNELS) -> None:
-        self.sample_rate = sample_rate
         self.channels = channels
-        self.use_vad = AUDIO_USE_VAD and webrtcvad is not None
         self.frame_ms = AUDIO_VAD_FRAME_MS
+        self.sample_rate = self._resolve_sample_rate(sample_rate)
         self.frame_size = int(self.sample_rate * self.frame_ms / 1000)
-        self.vad = webrtcvad.Vad(AUDIO_VAD_MODE) if self.use_vad else None
+        self.use_vad = AUDIO_USE_VAD and webrtcvad is not None
+        self.vad = webrtcvad.Vad(AUDIO_VAD_MODE) if self.use_vad and self.sample_rate in {8000, 16000, 32000, 48000} else None
+
+        if self.use_vad and self.vad is None:
+            print(f"[aviso] sample rate {self.sample_rate} Hz não é compatível com webrtcvad; usando detector simples por silêncio.")
+            self.use_vad = False
+
+    def _resolve_sample_rate(self, preferred_rate: int) -> int:
+        try:
+            sd.check_input_settings(samplerate=preferred_rate, channels=self.channels, dtype="float32")
+            return preferred_rate
+        except Exception:
+            pass
+
+        try:
+            device_info = sd.query_devices(kind="input")
+            fallback_rate = int(device_info.get("default_samplerate") or preferred_rate)
+        except Exception:
+            fallback_rate = preferred_rate
+
+        if fallback_rate != preferred_rate:
+            print(f"[aviso] sample rate {preferred_rate} Hz não suportado pelo dispositivo de captura; usando {fallback_rate} Hz.")
+
+        return fallback_rate
 
     def record_to_wav(self, output_path: str | Path, seconds: int = AUDIO_RECORD_SECONDS) -> Path:
         output = Path(output_path)
@@ -62,7 +85,7 @@ class AudioInput:
         output = Path(output_path)
         output.parent.mkdir(parents=True, exist_ok=True)
 
-        chunk_size = int(self.sample_rate * 0.25)
+        chunk_size = max(1, int(self.sample_rate * 0.25))
         captured = []
         silent_chunks = 0
         start = time.time()
@@ -97,12 +120,19 @@ class AudioInput:
         silence_frames = 0
         deadline = time.monotonic() + max_seconds
 
-        with sd.InputStream(
-            samplerate=self.sample_rate,
-            channels=self.channels,
-            dtype="int16",
-            blocksize=self.frame_size,
-        ) as stream:
+        try:
+            stream = sd.InputStream(
+                samplerate=self.sample_rate,
+                channels=self.channels,
+                dtype="int16",
+                blocksize=self.frame_size,
+            )
+        except PortAudioError:
+            print("[aviso] não foi possível abrir o stream com VAD; usando detector simples por silêncio.")
+            self.use_vad = False
+            return self.record_until_silence(output_path, max_seconds=max_seconds)
+
+        with stream:
             while time.monotonic() < deadline:
                 chunk, _ = stream.read(self.frame_size)
                 frame = chunk.copy()
