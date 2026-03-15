@@ -33,5 +33,5 @@ class OllamaClient:
             with request.urlopen(req, timeout=30) as response:
                 data = json.loads(response.read().decode("utf-8"))
                 return (data.get("response") or "").strip()
-        except error.URLError as exc:
+        except (error.URLError, TimeoutError, socket.timeout) as exc:
             raise RuntimeError(f"Falha ao acessar Ollama: {exc}") from exc
