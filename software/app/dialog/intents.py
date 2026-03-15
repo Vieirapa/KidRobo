@@ -19,7 +19,9 @@ class IntentClassifier:
             return IntentResult("name")
         if "brinc" in normalized or "jogar" in normalized:
             return IntentResult("play")
-        if "curiosidade" in normalized or "me conta algo" in normalized:
+        if "outra" in normalized and ("curiosidade" in normalized or "conte" in normalized or "me conte" in normalized):
+            return IntentResult("another_curiosity")
+        if "curiosidade" in normalized or "me conta algo" in normalized or "me fale algo" in normalized:
             return IntentResult("curiosity")
         if "robô" in normalized or "robo" in normalized:
             return IntentResult("robot")

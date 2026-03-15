@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import socket
 from urllib import request, error
 
 from app.config import OLLAMA_HOST, OLLAMA_MODEL, SYSTEM_PROMPT

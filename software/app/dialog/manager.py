@@ -24,7 +24,7 @@ class DialogueManager:
                 llm_response = self.ollama.generate(text)
                 if llm_response:
                     return self.safety.sanitize(llm_response)
-            except RuntimeError:
-                pass
+            except RuntimeError as exc:
+                print(f"[aviso] fallback local após falha no Ollama: {exc}")
 
         return self.safety.sanitize(STATIC_RESPONSES["fallback"])
