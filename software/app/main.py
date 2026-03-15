@@ -117,7 +117,7 @@ class KidRoboCLI:
         self.set_face(FaceState.WAITING, animate=True)
         timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
         mode = self.timed_input(
-            "[modo de escuta] digite 't' para texto ou 'a' para áudio > ",
+            "[modo de escuta] Enter para áudio, ou digite 't' para texto > ",
             timeout_seconds,
         )
         if mode is None:
@@ -126,7 +126,7 @@ class KidRoboCLI:
         mode = mode.strip().lower()
         self.reset_session_timer()
 
-        if mode == "a":
+        if mode != "t":
             if not self.stt:
                 print("[aviso] STT não está disponível; usando entrada por texto.")
                 text = self.timed_input("[criança] > ", SESSION_IDLE_TIMEOUT_SECONDS)
