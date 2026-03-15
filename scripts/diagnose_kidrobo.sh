@@ -3,7 +3,7 @@ set -euo pipefail
 
 INSTALL_DIR="${KIDROBO_INSTALL_DIR:-$HOME/KidRobo}"
 VENV_DIR="$INSTALL_DIR/.venv"
-MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:0.5b}"
+MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:1.5b}"
 
 section() {
   printf '\n=== %s ===\n' "$1"
