@@ -10,8 +10,11 @@ from app.audio.input import AudioInput
 from app.config import (
     APP_NAME,
     DEMO_PROMPTS,
+    DISPLAY_FORCE_IN_SCHOOL_DEMO,
     ENABLE_TTS,
     OLLAMA_MODEL,
+    SCHOOL_DEMO_CONTINUE_LISTENING,
+    SCHOOL_DEMO_COOLDOWN_SECONDS,
     SESSION_IDLE_TIMEOUT_SECONDS,
     WAKE_WORD,
 )
@@ -23,12 +26,15 @@ from app.tts import TTSManager
 
 
 class KidRoboCLI:
-    def __init__(self, input_mode: str = "auto") -> None:
+    def __init__(self, input_mode: str = "auto", school_demo: bool = False) -> None:
         self.input_mode = input_mode
+        self.school_demo = school_demo
         self.state = RobotState.STANDBY
         self.dialog = DialogueManager()
         self.audio = AudioInput()
         self.display = DisplayManager()
+        if self.school_demo and DISPLAY_FORCE_IN_SCHOOL_DEMO:
+            self.display.enabled = True
         self.stt = None
         self.tts = None
         self.pending_text = ""
@@ -185,6 +191,13 @@ class KidRoboCLI:
         self.set_face(FaceState.WAITING, animate=True)
         timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
 
+        if self.school_demo:
+            trigger = self.timed_input("[school-demo] Enter para escutar agora (push-to-talk simulado) > ", timeout_seconds)
+            if trigger is None:
+                return None
+            self.reset_session_timer()
+            return self.capture_audio()
+
         if self.input_mode == "text":
             return self.capture_text()
 
@@ -231,7 +244,10 @@ class KidRoboCLI:
 
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
-                self.speak("Oi! Estou ouvindo! Pode falar.")
+                if self.school_demo:
+                    self.speak("Oi! Toque para falar comigo. Eu vou ouvir você com atenção.")
+                else:
+                    self.speak("Oi! Estou ouvindo! Pode falar.")
                 self.start_latency_trace()
                 self.reset_session_timer()
                 self.state = RobotState.LISTENING
@@ -271,8 +287,12 @@ class KidRoboCLI:
             elif self.state == RobotState.SPEAKING:
                 self.speak(self.pending_response)
                 self.print_latency_trace()
+                if self.school_demo:
+                    time.sleep(SCHOOL_DEMO_COOLDOWN_SECONDS)
                 if self.standby_requested(self.pending_text):
                     self.go_to_standby("comando explícito do usuário")
+                elif self.school_demo and not SCHOOL_DEMO_CONTINUE_LISTENING:
+                    self.go_to_standby("fim da rodada do school-demo")
                 else:
                     self.reset_session_timer()
                     self.state = RobotState.LISTENING
@@ -315,7 +335,7 @@ class KidRoboDemo:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="KidRobo")
-    parser.add_argument("--mode", choices=["cli", "demo"], default="cli")
+    parser.add_argument("--mode", choices=["cli", "demo", "school-demo"], default="cli")
     parser.add_argument(
         "--input-mode",
         choices=["auto", "text", "prompt"],
@@ -333,7 +353,8 @@ def main() -> None:
         KidRoboDemo().run(loop=args.loop, delay=args.delay)
         return
 
-    app = KidRoboCLI(input_mode=args.input_mode)
+    school_demo = args.mode == "school-demo"
+    app = KidRoboCLI(input_mode=args.input_mode, school_demo=school_demo)
     app.run()
 
 

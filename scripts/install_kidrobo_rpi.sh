@@ -5,7 +5,7 @@ REPO_URL="${1:-git@github.com:Vieirapa/KidRobo.git}"
 INSTALL_DIR="${KIDROBO_INSTALL_DIR:-$HOME/KidRobo}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 VENV_DIR="$INSTALL_DIR/.venv"
-MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:1.5b}"
+MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:0.5b}"
 
 log() {
   printf '\n[%s] %s\n' "KidRobo" "$1"

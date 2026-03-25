@@ -110,6 +110,12 @@ cd software
 python -m app.main --mode demo
 ```
 
+#### Modo demo escolar (push-to-talk simulado)
+```bash
+cd software
+python -m app.main --mode school-demo
+```
+
 ### 3. Respostas locais já implementadas
 O sistema já possui intents e respostas locais para temas infantis comuns, como:
 - saudação
@@ -216,9 +222,13 @@ chmod +x scripts/*.sh
 - `docs/current-status.md`
 - `docs/implementation-plan.md`
 - `docs/blueprint-kidrobo-v0.1.md`
+- `docs/kidrobo-school-demo-plan.md`
 
 ### Raspberry / operação
 - `docs/raspberry-install.md`
+- `docs/raspberry-step-by-step.md`
+- `docs/pre-demo-checklist.md`
+- `docs/field-test-script.md`
 - `docs/systemd-service.md`
 
 ### Display / rosto
