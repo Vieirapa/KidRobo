@@ -23,7 +23,7 @@ class DisplayManager:
 
     def render_once(self, state: FaceState | None = None) -> Path | None:
         target_state = state or self.current_state
-        frame = self.assets.random_frame(target_state)
+        frame = self.assets.next_frame(target_state)
         if not frame:
             return None
         if self.enabled and self.renderer.available():
