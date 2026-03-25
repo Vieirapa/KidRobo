@@ -1,6 +1,12 @@
+from pathlib import Path
+
 APP_NAME = "KidRobo"
 WAKE_WORD = "kidrobo"
 LANGUAGE = "pt-BR"
+
+APP_DIR = Path(__file__).resolve().parent
+SOFTWARE_DIR = APP_DIR.parent
+PROJECT_ROOT = SOFTWARE_DIR.parent
 
 OLLAMA_HOST = "http://localhost:11434"
 OLLAMA_MODEL = "qwen2.5:0.5b"
@@ -38,7 +44,7 @@ DISPLAY_ENABLED = False
 DISPLAY_FORCE_IN_SCHOOL_DEMO = True
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 480
-DISPLAY_ASSETS_DIR = "assets/faces"
+DISPLAY_ASSETS_DIR = str(PROJECT_ROOT / "assets" / "faces")
 DISPLAY_FRAME_DELAY_SECONDS = 0.6
 
 DEMO_PROMPTS = [
