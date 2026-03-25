@@ -13,18 +13,18 @@ class DialogueManager:
         self.safety = SafetyFilter()
         self.ollama = OllamaClient()
 
-    def reply(self, text: str) -> str:
+    def reply(self, text: str) -> tuple[str, str]:
         intent = self.intent_classifier.classify(text)
 
-        if intent.name in STATIC_RESPONSES and intent.name != "fallback":
-            return self.safety.sanitize(STATIC_RESPONSES[intent.name])
+        if intent.name in STATIC_RESPONSES and intent.name not in {"fallback", "open_question"}:
+            return self.safety.sanitize(STATIC_RESPONSES[intent.name]), "local"
 
         if ENABLE_OLLAMA:
             try:
                 llm_response = self.ollama.generate(text)
                 if llm_response:
-                    return self.safety.sanitize(llm_response)
+                    return self.safety.sanitize(llm_response), "ollama"
             except RuntimeError as exc:
                 print(f"[aviso] fallback local após falha no Ollama: {exc}")
 
-        return self.safety.sanitize(STATIC_RESPONSES["fallback"])
+        return self.safety.sanitize(STATIC_RESPONSES["fallback"]), "fallback"

@@ -1,63 +1,134 @@
-# Plano de implementação — KidRobo v0.1
+# Plano de implementação — KidRobo v0.2
 
-## Etapa 1 — Fundação do projeto
-- definir estrutura do repositório
-- documentar arquitetura
-- preparar ambiente Python
-- definir contratos entre módulos
+## Objetivo desta etapa
+Transformar o KidRobo de um simulador CLI assistido para uma experiência de conversa infantil mais natural no Raspberry Pi, com foco em:
+- menor latência percebida e real
+- menos pontos de erro na interação
+- transição gradual do modo debug para o modo de uso real
 
-## Etapa 2 — Simulador local com Ollama
-- criar máquina de estados
-- criar motor de intenções simples
-- integrar Ollama como fallback para perguntas abertas
-- simular eventos por texto no terminal
-- validar fluxo completo sem hardware real
+---
 
-## Etapa 3 — Áudio no Raspberry Pi
-- integrar captura de microfone
-- integrar STT real
-- integrar TTS real
-- criar scripts de teste de áudio e diagnóstico
+## Estratégia geral
+A implementação será dividida em **3 sprints curtos**, cada um com entregas funcionais e testáveis em Raspberry Pi.
 
-## Etapa 4 — Operação embarcada inicial
-- criar modo demo
-- criar scripts de instalação na Raspberry Pi
-- instalar serviço `systemd` do usuário
-- validar execução automática
+### Princípio central
+O fluxo principal deve ser:
+- acordar
+- ouvir automaticamente
+- responder rápido
+- continuar escutando por uma janela curta
+- voltar para standby sem operador humano
 
-## Etapa 5 — Rosto em tela
-- suportar assets 800x480 por estado
-- alternar frames aleatórios por contexto
-- ligar estados de display ao fluxo do KidRobo
-- preparar renderização fullscreen via `feh` ou `fbi`
+Texto via terminal continuará existindo, mas apenas como ferramenta de debug.
 
-## Etapa 6 — Wake word real
-- integrar wake word
-- reduzir falso positivo
-- ajustar experiência de ativação
+---
 
-## Etapa 7 — Resposta híbrida
-- manter intents básicas locais
-- usar Ollama para respostas abertas curtas
-- aplicar filtro infantil sempre
+# Sprint 1 — UX básica realista
+## Objetivo
+Eliminar o passo manual de escolher áudio por ENTER e aproximar o fluxo da experiência real da criança.
 
-## Etapa 8 — Expressão física
-- LED RGB para status
-- botão opcional
-- logs de transição de estado
-- toque na tela no futuro
+## Problemas atacados
+- a criança não entende o timing do terminal
+- a necessidade de apertar ENTER adiciona erro operacional
+- o fluxo atual parece teste técnico, não conversa natural
 
-## Etapa 9 — Primeiro teste de campo
-- testar com perguntas simples
-- medir tempo de resposta
-- ajustar volume, microfone e ruído ambiente
-- validar experiência visual na tela
+## Entregas
+- modo padrão com **áudio automático** após wake word simulada
+- modo texto preservado apenas para debug
+- modo legado com prompt manual preservado para comparação
+- logs mais claros de modo de entrada e transições
+- documentação atualizada do novo comportamento
 
-## Critério de pronto do primeiro teste
-- diagnóstico funcional
-- transcrição aceitável
-- resposta híbrida estável
-- TTS inteligível
-- demo operacional
-- estados visuais básicos funcionando
-- loop completo sem travamentos
+## Critério de pronto
+- após `kidrobo`, o sistema entra em escuta sem pedir ENTER
+- ainda é possível depurar por texto com opção explícita
+- fluxo continua estável no CLI
+
+## Status
+- [x] adicionar `--input-mode auto|text|prompt`
+- [x] tornar `auto` o comportamento padrão
+- [x] manter modo legado para troubleshooting
+- [ ] validar no Raspberry Pi real
+
+---
+
+# Sprint 2 — Latência e percepção de resposta
+## Objetivo
+Reduzir o tempo entre a fala da criança e a reação do KidRobo, melhorando também a sensação de responsividade.
+
+## Problemas atacados
+- resposta parece lenta mesmo quando o sistema está funcionando
+- parte do atraso vem da espera silenciosa sem feedback
+- perguntas simples talvez estejam indo longe demais até o Ollama
+
+## Entregas
+- medição de latência por etapa:
+  - início da escuta
+  - fim da captura
+  - fim da transcrição
+  - fim da geração da resposta
+  - início/fim do TTS
+- revisão dos parâmetros de captura e silêncio
+- criação explícita de estado/feedback de "pensando"
+- expansão das respostas/intents locais para reduzir chamadas ao Ollama
+- revisão do script de diagnóstico para refletir o modelo atual `qwen2.5:0.5b`
+
+## Critério de pronto
+- logs mostram onde a latência acontece
+- perguntas comuns de criança resolvem localmente com mais frequência
+- a experiência parece mais rápida, mesmo sem mudar toda a arquitetura
+
+## Status
+- [x] instrumentar latência no `main.py`
+- [ ] revisar thresholds de áudio
+- [x] expandir intents e respostas locais
+- [x] alinhar diagnóstico com `qwen2.5:0.5b`
+- [ ] validar ganho prático no Raspberry
+
+---
+
+# Sprint 3 — Conversa contínua robusta
+## Objetivo
+Permitir uma troca mais natural, reduzindo atropelos entre fala da criança e resposta do KidRobo.
+
+## Problemas atacados
+- a criança pode começar a falar por cima do robô
+- o fluxo ainda é rígido demais entre speaking e listening
+- falta uma janela de continuação mais natural
+
+## Entregas
+- janela curta de continuação após cada resposta
+- timeout curto pós-resposta + timeout maior de sessão
+- política básica para evitar recaptura indevida da própria voz do KidRobo
+- testes práticos de turn-taking em Raspberry Pi
+- preparação da base para wake word real depois
+
+## Critério de pronto
+- a conversa pode emendar naturalmente após uma resposta
+- menos erros de timing por parte da criança
+- o comportamento do robô fica mais previsível em uso real
+
+## Status
+- [ ] definir timeouts curto/longo
+- [ ] ajustar transição `SPEAKING -> LISTENING`
+- [ ] reduzir risco de autocaptura
+- [ ] validar em teste de campo curto
+
+---
+
+## Ordem de execução recomendada
+1. Sprint 1 — remover atrito humano do fluxo
+2. Sprint 2 — atacar latência real e percebida
+3. Sprint 3 — melhorar turn-taking e conversa contínua
+
+---
+
+## Registro de início imediato
+Em 2026-03-24, o trabalho foi iniciado pelo **Sprint 1**, com a mudança do modo padrão para captura automática de áudio após wake e preservação do texto apenas como ferramenta explícita de debug.
+
+## Registro adicional do Sprint 2
+Em 2026-03-24, o Sprint 2 avançou com:
+- instrumentação inicial de latência por rodada
+- indicação da fonte da resposta (`local`, `ollama` ou `fallback`)
+- expansão das intents locais para perguntas infantis comuns
+- alinhamento do script de diagnóstico com o modelo `qwen2.5:0.5b`

@@ -23,7 +23,8 @@ from app.tts import TTSManager
 
 
 class KidRoboCLI:
-    def __init__(self) -> None:
+    def __init__(self, input_mode: str = "auto") -> None:
+        self.input_mode = input_mode
         self.state = RobotState.STANDBY
         self.dialog = DialogueManager()
         self.audio = AudioInput()
@@ -32,8 +33,10 @@ class KidRoboCLI:
         self.tts = None
         self.pending_text = ""
         self.pending_response = ""
+        self.pending_source = "unknown"
         self.audio_file = Path("/tmp/kidrobo_input.wav")
         self.session_deadline = None
+        self.latency_marks: dict[str, float] = {}
 
         try:
             self.stt = FasterWhisperEngine()
@@ -61,7 +64,43 @@ class KidRoboCLI:
             if frame:
                 print(f"[display] {state.value}: {frame}")
 
+    def start_latency_trace(self) -> None:
+        now = time.perf_counter()
+        self.latency_marks = {"wake": now}
+
+    def mark_latency(self, label: str) -> None:
+        self.latency_marks[label] = time.perf_counter()
+
+    def print_latency_trace(self) -> None:
+        if "wake" not in self.latency_marks:
+            return
+
+        order = [
+            "wake",
+            "listen_start",
+            "capture_end",
+            "stt_end",
+            "think_end",
+            "tts_start",
+            "tts_end",
+        ]
+        available = [label for label in order if label in self.latency_marks]
+        if len(available) < 2:
+            return
+
+        base = self.latency_marks[available[0]]
+        print("[latência] resumo da rodada:")
+        previous = base
+        for label in available[1:]:
+            current = self.latency_marks[label]
+            delta_prev = current - previous
+            delta_total = current - base
+            print(f"  - {label}: +{delta_prev:.2f}s (total {delta_total:.2f}s)")
+            previous = current
+        print(f"  - fonte da resposta: {self.pending_source}")
+
     def speak(self, text: str) -> None:
+        self.mark_latency("tts_start")
         self.set_face(FaceState.TALKING, animate=True)
         print(f"KidRobo: {text}\n")
         if self.tts:
@@ -69,6 +108,7 @@ class KidRoboCLI:
                 self.tts.say(text)
             except Exception as exc:
                 print(f"[aviso] Falha no TTS: {exc}")
+        self.mark_latency("tts_end")
         self.set_face(FaceState.WAITING)
 
     def reset_session_timer(self) -> None:
@@ -109,49 +149,66 @@ class KidRoboCLI:
             print(f"[estado] voltando para standby: {reason}")
         self.pending_text = ""
         self.pending_response = ""
+        self.pending_source = "unknown"
+        self.latency_marks = {}
         self.clear_session_timer()
         self.state = RobotState.STANDBY
         self.set_face(FaceState.STANDBY)
 
-    def capture_text(self) -> str | None:
-        self.set_face(FaceState.WAITING, animate=True)
-        timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
-        mode = self.timed_input(
-            "[modo de escuta] Enter para áudio, ou digite 't' para texto > ",
-            timeout_seconds,
-        )
-        if mode is None:
-            return None
+    def capture_audio(self) -> str | None:
+        if not self.stt:
+            print("[aviso] STT não está disponível; troque para --input-mode text para depuração por texto.")
+            return ""
 
-        mode = mode.strip().lower()
+        self.mark_latency("listen_start")
+        print("[modo de escuta] áudio automático ativo. Fale agora...")
+        audio_path = self.audio.record_until_silence(self.audio_file)
+        self.mark_latency("capture_end")
+        print(f"[gravado] arquivo salvo em {audio_path}")
+        recognized = self.stt.transcribe_file(audio_path)
+        self.mark_latency("stt_end")
+        print(f"[transcrevendo] Texto reconhecido: {recognized}")
         self.reset_session_timer()
+        return recognized.strip()
 
-        if mode != "t":
-            if not self.stt:
-                print("[aviso] STT não está disponível; usando entrada por texto.")
-                text = self.timed_input("[criança] > ", SESSION_IDLE_TIMEOUT_SECONDS)
-                if text is not None:
-                    self.reset_session_timer()
-                return text.strip() if text else text
-
-            print("[gravando] fale agora...")
-            audio_path = self.audio.record_until_silence(self.audio_file)
-            print(f"[gravado] arquivo salvo em {audio_path}")
-            recognized = self.stt.transcribe_file(audio_path)
-            print(f"[transcrevendo] Texto reconhecido: {recognized}")
-            self.reset_session_timer()
-            return recognized.strip()
-
+    def capture_text(self) -> str | None:
+        self.mark_latency("listen_start")
         text = self.timed_input("[criança] > ", SESSION_IDLE_TIMEOUT_SECONDS)
         if text is None:
             return None
+        self.mark_latency("capture_end")
+        self.mark_latency("stt_end")
         self.reset_session_timer()
         return text.strip()
+
+    def capture_user_input(self) -> str | None:
+        self.set_face(FaceState.WAITING, animate=True)
+        timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
+
+        if self.input_mode == "text":
+            return self.capture_text()
+
+        if self.input_mode == "prompt":
+            mode = self.timed_input(
+                "[modo de escuta] Enter para áudio, ou digite 't' para texto > ",
+                timeout_seconds,
+            )
+            if mode is None:
+                return None
+
+            mode = mode.strip().lower()
+            self.reset_session_timer()
+            if mode == "t":
+                return self.capture_text()
+            return self.capture_audio()
+
+        return self.capture_audio()
 
     def run(self) -> None:
         print(f"{APP_NAME} iniciado em modo CLI.")
         print(f"Wake word simulada: {WAKE_WORD}")
         print(f"Modelo Ollama configurado: {OLLAMA_MODEL}")
+        print(f"Modo de entrada: {self.input_mode}")
         print("Digite 'kidrobo' para acordar, 'sair' para encerrar.")
         print(
             f"Depois de acordar, o KidRobo só volta para standby com o comando explícito ou após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem interação.\n"
@@ -166,6 +223,7 @@ class KidRoboCLI:
                     print("Encerrando KidRobo.")
                     break
                 if text.lower() == WAKE_WORD:
+                    self.start_latency_trace()
                     self.reset_session_timer()
                     self.state = RobotState.WAKE_DETECTED
                 else:
@@ -174,6 +232,7 @@ class KidRoboCLI:
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
                 self.speak("Oi! Estou ouvindo! Pode falar.")
+                self.start_latency_trace()
                 self.reset_session_timer()
                 self.state = RobotState.LISTENING
 
@@ -182,15 +241,16 @@ class KidRoboCLI:
                     self.go_to_standby("tempo de espera esgotado")
                     continue
 
-                user_text = self.capture_text()
+                user_text = self.capture_user_input()
                 if user_text is None:
                     self.go_to_standby("1 minuto sem interação")
                 elif not user_text:
                     print("[aviso] Não entendi nada. Pode tentar de novo ou pedir para voltar ao standby.")
                     self.state = RobotState.LISTENING
                 elif self.standby_requested(user_text):
-                    self.speak("Tá bom! Vou voltar para standby.")
-                    self.go_to_standby("comando explícito do usuário")
+                    self.pending_source = "local"
+                    self.pending_response = "Tá bom! Vou voltar para standby."
+                    self.state = RobotState.SPEAKING
                 else:
                     self.pending_text = user_text
                     self.state = RobotState.TRANSCRIBING
@@ -201,15 +261,22 @@ class KidRoboCLI:
                 self.state = RobotState.THINKING
 
             elif self.state == RobotState.THINKING:
-                self.set_face(FaceState.WAITING, animate=True)
-                response = self.dialog.reply(self.pending_text)
+                self.set_face(FaceState.HAPPY, animate=True)
+                response, source = self.dialog.reply(self.pending_text)
+                self.mark_latency("think_end")
                 self.pending_response = response
+                self.pending_source = source
                 self.state = RobotState.SPEAKING
 
             elif self.state == RobotState.SPEAKING:
                 self.speak(self.pending_response)
-                self.reset_session_timer()
-                self.state = RobotState.LISTENING
+                self.print_latency_trace()
+                if self.standby_requested(self.pending_text):
+                    self.go_to_standby("comando explícito do usuário")
+                else:
+                    self.reset_session_timer()
+                    self.state = RobotState.LISTENING
+                    self.start_latency_trace()
 
             elif self.state == RobotState.ERROR:
                 self.set_face(FaceState.ERROR)
@@ -249,6 +316,12 @@ class KidRoboDemo:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="KidRobo")
     parser.add_argument("--mode", choices=["cli", "demo"], default="cli")
+    parser.add_argument(
+        "--input-mode",
+        choices=["auto", "text", "prompt"],
+        default="auto",
+        help="auto = áudio automático após wake; text = debug por texto; prompt = fluxo antigo com escolha manual",
+    )
     parser.add_argument("--loop", action="store_true", help="Loop infinito no modo demo")
     parser.add_argument("--delay", type=float, default=2.0, help="Pausa entre frases no modo demo")
     return parser
@@ -260,7 +333,7 @@ def main() -> None:
         KidRoboDemo().run(loop=args.loop, delay=args.delay)
         return
 
-    app = KidRoboCLI()
+    app = KidRoboCLI(input_mode=args.input_mode)
     app.run()
 
 

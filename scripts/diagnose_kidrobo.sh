@@ -3,7 +3,7 @@ set -euo pipefail
 
 INSTALL_DIR="${KIDROBO_INSTALL_DIR:-$HOME/KidRobo}"
 VENV_DIR="$INSTALL_DIR/.venv"
-MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:1.5b}"
+MODEL="${KIDROBO_OLLAMA_MODEL:-qwen2.5:0.5b}"
 
 section() {
   printf '\n=== %s ===\n' "$1"
@@ -36,13 +36,19 @@ if [ -d "$VENV_DIR" ]; then
   # shellcheck disable=SC1090
   source "$VENV_DIR/bin/activate"
   python - <<'PY'
-mods = ["numpy", "sounddevice", "faster_whisper", "av"]
+mods = ["numpy", "sounddevice", "faster_whisper", "av", "requests"]
 for mod in mods:
     try:
         __import__(mod)
         print(f"[ok] módulo Python disponível: {mod}")
     except Exception as exc:
         print(f"[erro] módulo Python indisponível: {mod} -> {exc}")
+
+try:
+    import webrtcvad  # type: ignore
+    print("[ok] módulo Python disponível: webrtcvad")
+except Exception as exc:
+    print(f"[aviso] webrtcvad indisponível neste ambiente: {exc}")
 PY
 fi
 
