@@ -213,6 +213,7 @@ chmod +x scripts/*.sh
 - `docs/ollama-strategy.md`
 
 ### Planejamento e status
+- `docs/current-status.md`
 - `docs/implementation-plan.md`
 - `docs/blueprint-kidrobo-v0.1.md`
 
