@@ -17,6 +17,9 @@ from app.config import (
     SCHOOL_DEMO_COOLDOWN_SECONDS,
     SESSION_IDLE_TIMEOUT_SECONDS,
     STANDBY_POLL_SECONDS,
+    TOUCH_DEBOUNCE_SECONDS,
+    TOUCH_DEVICE_PATH,
+    TOUCH_ENABLED,
     WAKE_WORD,
 )
 from app.dialog.manager import DialogueManager
@@ -27,6 +30,7 @@ from app.dialog.school_demo_prompts import (
     random_school_demo_wake_line,
 )
 from app.display import DisplayManager, FaceState
+from app.hardware.touch import TouchConfig, TouchInput
 from app.state_machine import RobotState
 from app.stt import FasterWhisperEngine
 from app.tts import TTSManager
@@ -56,6 +60,7 @@ class KidRoboCLI:
         self.recent_wake_lines: list[str] = []
         self.recent_idle_lines: list[str] = []
         self.recent_turn_on_lines: list[str] = []
+        self.touch = self._build_touch_input()
 
         try:
             self.stt = FasterWhisperEngine()
@@ -69,6 +74,27 @@ class KidRoboCLI:
                 print(f"[aviso] TTS indisponível no momento: {exc}")
 
         self.display.set_state(FaceState.STANDBY, render=False)
+
+    def _build_touch_input(self) -> TouchInput | None:
+        if not self.school_demo or not TOUCH_ENABLED:
+            return None
+
+        try:
+            if TOUCH_DEVICE_PATH:
+                touch = TouchInput(TouchConfig(device_path=TOUCH_DEVICE_PATH, debounce_seconds=TOUCH_DEBOUNCE_SECONDS))
+                touch.open()
+                print(f"[touch] usando dispositivo configurado: {TOUCH_DEVICE_PATH}")
+                return touch
+
+            touch = TouchInput.autodetect(debounce_seconds=TOUCH_DEBOUNCE_SECONDS)
+            if touch:
+                print(f"[touch] touchscreen detectado em {touch.device_path}")
+            else:
+                print("[touch] nenhum touchscreen detectado; mantendo wake por teclado")
+            return touch
+        except Exception as exc:
+            print(f"[aviso] Touch indisponível no momento: {exc}")
+            return None
 
     def set_face(self, state: FaceState, animate: bool = False) -> None:
         self.display.set_state(state, render=not animate)
@@ -209,9 +235,16 @@ class KidRoboCLI:
         timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
 
         if self.school_demo:
-            trigger = self.timed_input("[school-demo] Enter para escutar agora (push-to-talk simulado) > ", timeout_seconds)
-            if trigger is None:
-                return None
+            if self.touch:
+                print("[school-demo] toque na tela para escutar agora > ", end="", flush=True)
+                touched = self.touch.wait_for_touch(timeout_seconds)
+                print()
+                if not touched:
+                    return None
+            else:
+                trigger = self.timed_input("[school-demo] Enter para escutar agora (push-to-talk simulado) > ", timeout_seconds)
+                if trigger is None:
+                    return None
             self.reset_session_timer()
             return self.capture_audio()
 
@@ -258,9 +291,12 @@ class KidRoboCLI:
             if self.state == RobotState.STANDBY:
                 self.clear_session_timer()
                 self.set_face(FaceState.STANDBY)
+                touched = False
                 text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS, repeat_prompt=not standby_prompt_shown)
                 standby_prompt_shown = True
-                if text is None:
+                if text is None and self.touch:
+                    touched = self.touch.wait_for_touch(0.01)
+                if text is None and not touched:
                     if self.school_demo and self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
                         idle_line = random_school_demo_idle_line(recent_lines=self.recent_idle_lines)
                         self.recent_idle_lines.append(idle_line)
@@ -268,7 +304,11 @@ class KidRoboCLI:
                         self.speak(idle_line)
                         self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
                     continue
-                text = text.strip()
+                if touched:
+                    text = WAKE_WORD
+                    print("[touch] toque detectado em standby")
+                else:
+                    text = text.strip()
                 if text.lower() == "sair":
                     print("Encerrando KidRobo.")
                     break

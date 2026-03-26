@@ -23,6 +23,17 @@ No ambiente virtual:
 python -m app.main
 ```
 
+## Teste do touchscreen fora do KidRobo
+Para validar se a tela touch está gerando eventos antes de testar o fluxo completo:
+
+```bash
+cd ~/KidRobo/software
+python scripts/test_touchscreen.py --seconds 15
+```
+
+Se o touch estiver correto, o script detectará um ou mais toques e mostrará o device usado.
+No `school-demo`, quando houver touchscreen detectado, o KidRobo também passa a aceitar toque na tela para sair do standby e iniciar a escuta.
+
 Fluxo do teste:
 1. digitar `kidrobo`
 2. escolher `t` para texto ou `a` para áudio
