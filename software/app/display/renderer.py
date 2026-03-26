@@ -35,7 +35,7 @@ class FaceRenderer:
 
         if self.feh:
             subprocess.run(
-                [self.feh, "-F", "-x", "-Y", "-Z", image],
+                [self.feh, "-x", "-Y", "-Z", image],
                 check=True,
             )
             return
