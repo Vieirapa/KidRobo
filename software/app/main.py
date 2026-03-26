@@ -27,14 +27,16 @@ from app.tts import TTSManager
 
 
 class KidRoboCLI:
-    def __init__(self, input_mode: str = "auto", school_demo: bool = False) -> None:
+    def __init__(self, input_mode: str = "auto", school_demo: bool = False, display_enabled: bool = True) -> None:
         self.input_mode = input_mode
         self.school_demo = school_demo
+        self.display_enabled = display_enabled
         self.state = RobotState.STANDBY
         self.dialog = DialogueManager()
         self.audio = AudioInput()
         self.display = DisplayManager()
-        if self.school_demo and DISPLAY_FORCE_IN_SCHOOL_DEMO:
+        self.display.enabled = self.display_enabled
+        if self.school_demo and DISPLAY_FORCE_IN_SCHOOL_DEMO and self.display_enabled:
             self.display.enabled = True
         self.stt = None
         self.tts = None
@@ -348,6 +350,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--loop", action="store_true", help="Loop infinito no modo demo")
     parser.add_argument("--delay", type=float, default=2.0, help="Pausa entre frases no modo demo")
+    parser.add_argument("--no-display", action="store_true", help="Desabilita o display/rostos para testes de fluxo")
     return parser
 
 
@@ -358,7 +361,11 @@ def main() -> None:
         return
 
     school_demo = args.mode == "school-demo"
-    app = KidRoboCLI(input_mode=args.input_mode, school_demo=school_demo)
+    app = KidRoboCLI(
+        input_mode=args.input_mode,
+        school_demo=school_demo,
+        display_enabled=not args.no_display,
+    )
     app.run()
 
 

@@ -116,6 +116,12 @@ cd software
 python -m app.main --mode school-demo
 ```
 
+#### Modo demo escolar sem display (para testar fluxo)
+```bash
+cd software
+python -m app.main --mode school-demo --no-display
+```
+
 ### 3. Respostas locais já implementadas
 O sistema já possui intents e respostas locais para temas infantis comuns, como:
 - saudação
