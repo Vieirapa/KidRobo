@@ -53,9 +53,9 @@ class KidRoboCLI:
         self.session_deadline = None
         self.latency_marks: dict[str, float] = {}
         self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds() if self.school_demo else None
-        self.last_wake_line = ""
-        self.last_idle_line = ""
-        self.last_turn_on_line = ""
+        self.recent_wake_lines: list[str] = []
+        self.recent_idle_lines: list[str] = []
+        self.recent_turn_on_lines: list[str] = []
 
         try:
             self.stt = FasterWhisperEngine()
@@ -246,8 +246,9 @@ class KidRoboCLI:
 
         if self.school_demo:
             time.sleep(3.5)
-            turn_on_line = random_school_demo_turn_on_line(last_line=self.last_turn_on_line)
-            self.last_turn_on_line = turn_on_line
+            turn_on_line = random_school_demo_turn_on_line(recent_lines=self.recent_turn_on_lines)
+            self.recent_turn_on_lines.append(turn_on_line)
+            self.recent_turn_on_lines = self.recent_turn_on_lines[-5:]
             self.speak(turn_on_line)
             self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
 
@@ -261,8 +262,9 @@ class KidRoboCLI:
                 standby_prompt_shown = True
                 if text is None:
                     if self.school_demo and self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
-                        idle_line = random_school_demo_idle_line(last_line=self.last_idle_line)
-                        self.last_idle_line = idle_line
+                        idle_line = random_school_demo_idle_line(recent_lines=self.recent_idle_lines)
+                        self.recent_idle_lines.append(idle_line)
+                        self.recent_idle_lines = self.recent_idle_lines[-5:]
                         self.speak(idle_line)
                         self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
                     continue
@@ -282,8 +284,9 @@ class KidRoboCLI:
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
                 if self.school_demo:
-                    wake_line = random_school_demo_wake_line(last_line=self.last_wake_line)
-                    self.last_wake_line = wake_line
+                    wake_line = random_school_demo_wake_line(recent_lines=self.recent_wake_lines)
+                    self.recent_wake_lines.append(wake_line)
+                    self.recent_wake_lines = self.recent_wake_lines[-5:]
                     self.speak(wake_line)
                 else:
                     self.speak("Oi! Estou ouvindo! Pode falar.")

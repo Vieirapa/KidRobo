@@ -5,7 +5,7 @@ from app.dialog.intents import IntentClassifier
 from app.dialog.ollama_client import OllamaClient
 from app.dialog.responses import FALLBACK_LINES, STATIC_RESPONSES
 from app.dialog.safety import SafetyFilter
-from app.dialog.school_demo_lines import random_school_demo_fallback
+from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_school_demo_fallback
 
 
 class DialogueManager:
@@ -14,11 +14,19 @@ class DialogueManager:
         self.intent_classifier = IntentClassifier()
         self.safety = SafetyFilter()
         self.ollama = OllamaClient()
-        self.last_reply = ""
+        self.recent_replies: list[str] = []
 
     def _remember(self, text: str, source: str) -> tuple[str, str]:
-        self.last_reply = text
+        self.recent_replies.append(text)
+        self.recent_replies = self.recent_replies[-5:]
         return self.safety.sanitize(text), source
+
+    def _pick_general_fallback(self) -> str:
+        all_fallbacks = [line for group in FALLBACK_LINES.values() for line in group]
+        recent = set(self.recent_replies)
+        available = [line for line in all_fallbacks if line not in recent]
+        pool = available or all_fallbacks
+        return pool[0] if len(pool) == 1 else __import__("random").choice(pool)
 
     def reply(self, text: str) -> tuple[str, str]:
         intent = self.intent_classifier.classify(text)
@@ -27,7 +35,8 @@ class DialogueManager:
             return self._remember(STATIC_RESPONSES[intent.name], "local")
 
         if self.school_demo:
-            return self._remember(random_school_demo_fallback(last_line=self.last_reply), "school-demo-fallback")
+            recent_demo_lines = [line for line in self.recent_replies if line in all_school_demo_fallback_lines()]
+            return self._remember(random_school_demo_fallback(recent_lines=recent_demo_lines[-5:]), "school-demo-fallback")
 
         if ENABLE_OLLAMA:
             try:
@@ -37,5 +46,4 @@ class DialogueManager:
             except RuntimeError as exc:
                 print(f"[aviso] fallback local após falha no Ollama: {exc}")
 
-        fallback = next((line for line in FALLBACK_LINES if line != self.last_reply), FALLBACK_LINES[0])
-        return self._remember(fallback, "fallback")
+        return self._remember(self._pick_general_fallback(), "fallback")
