@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+FALLBACK_LINES = [
+    "Ops, acho que minhas anteninhas misturaram essa pergunta. Pode repetir mais devagar, por favor?",
+    "Ih, meus circuitos ficaram um tiquinho confusos. Fala de novo para mim?",
+    "Hum... não entendi direitinho. Pode me contar isso outra vez, bem devagar?",
+    "Bip bip... perdi um pedacinho do que você disse. Pode repetir?",
+    "Meu cérebro de parafusos não pegou tudo. Pode tentar de novo?",
+]
+
 STATIC_RESPONSES = {
     "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar comigo?",
     "name": "Meu nome é KidRobo. Eu sou um robozinho curioso e brincalhão.",
@@ -29,5 +37,5 @@ STATIC_RESPONSES = {
     "another_curiosity": "Outra curiosidade: o primeiro robô industrial famoso ajudava em fábricas repetindo movimentos com muita precisão.",
     "robot": "Um robô é uma máquina que pode sentir, pensar de um jeito programado e fazer ações.",
     "count": "Vamos juntos: um, dois, três, quatro, cinco! Quer continuar até dez?",
-    "fallback": "Não entendi muito bem. Pode repetir mais devagar, por favor?",
+    "fallback": FALLBACK_LINES[0],
 }

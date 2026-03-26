@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+from typing import Sequence
 
 SCHOOL_DEMO_WAKE_LINES = [
     "Oi! Toque aí para falar comigo.",
@@ -92,20 +93,28 @@ SCHOOL_DEMO_TURN_ON_LINES = [
 ]
 
 
-def _random_line(lines: list[str]) -> str:
-    return random.choice(lines)
+def _random_line(lines: Sequence[str], last_line: str | None = None) -> str:
+    if not lines:
+        return ""
+    if len(lines) == 1:
+        return lines[0]
+
+    choices = [line for line in lines if line != last_line]
+    if not choices:
+        choices = list(lines)
+    return random.choice(choices)
 
 
-def random_school_demo_wake_line() -> str:
-    return _random_line(SCHOOL_DEMO_WAKE_LINES)
+def random_school_demo_wake_line(last_line: str | None = None) -> str:
+    return _random_line(SCHOOL_DEMO_WAKE_LINES, last_line=last_line)
 
 
-def random_school_demo_idle_line() -> str:
-    return _random_line(SCHOOL_DEMO_IDLE_LINES)
+def random_school_demo_idle_line(last_line: str | None = None) -> str:
+    return _random_line(SCHOOL_DEMO_IDLE_LINES, last_line=last_line)
 
 
-def random_school_demo_turn_on_line() -> str:
-    return _random_line(SCHOOL_DEMO_TURN_ON_LINES)
+def random_school_demo_turn_on_line(last_line: str | None = None) -> str:
+    return _random_line(SCHOOL_DEMO_TURN_ON_LINES, last_line=last_line)
 
 
 def random_idle_interval_seconds() -> float:

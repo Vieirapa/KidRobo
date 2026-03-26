@@ -53,6 +53,9 @@ class KidRoboCLI:
         self.session_deadline = None
         self.latency_marks: dict[str, float] = {}
         self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds() if self.school_demo else None
+        self.last_wake_line = ""
+        self.last_idle_line = ""
+        self.last_turn_on_line = ""
 
         try:
             self.stt = FasterWhisperEngine()
@@ -243,7 +246,9 @@ class KidRoboCLI:
 
         if self.school_demo:
             time.sleep(3.5)
-            self.speak(random_school_demo_turn_on_line())
+            turn_on_line = random_school_demo_turn_on_line(last_line=self.last_turn_on_line)
+            self.last_turn_on_line = turn_on_line
+            self.speak(turn_on_line)
             self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
 
         standby_prompt_shown = False
@@ -256,7 +261,9 @@ class KidRoboCLI:
                 standby_prompt_shown = True
                 if text is None:
                     if self.school_demo and self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
-                        self.speak(random_school_demo_idle_line())
+                        idle_line = random_school_demo_idle_line(last_line=self.last_idle_line)
+                        self.last_idle_line = idle_line
+                        self.speak(idle_line)
                         self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
                     continue
                 text = text.strip()
@@ -275,7 +282,9 @@ class KidRoboCLI:
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
                 if self.school_demo:
-                    self.speak(random_school_demo_wake_line())
+                    wake_line = random_school_demo_wake_line(last_line=self.last_wake_line)
+                    self.last_wake_line = wake_line
+                    self.speak(wake_line)
                 else:
                     self.speak("Oi! Estou ouvindo! Pode falar.")
                 self.start_latency_trace()
