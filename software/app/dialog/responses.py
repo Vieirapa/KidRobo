@@ -66,6 +66,21 @@ ENGINEER_PROFESSION_LINES = [
     "Um engenheiro testa bastante. Não é só ter ideia legal. Tem que funcionar de verdade e com segurança.",
 ]
 
+ROBOT_TALK_LINES = [
+    "Robôs são máquinas criadas para perceber coisas, seguir instruções e fazer ações. Alguns ajudam em fábricas, outros em hospitais, e outros, como eu, ajudam a conversar e ensinar.",
+    "Um robô junta várias partes trabalhando em equipe: sensores para perceber, programas para decidir e peças para agir. É quase como ter olhos, cérebro e mãos de máquina.",
+    "Quem faz robôs costuma misturar engenharia, eletrônica, programação e muita paciência. Primeiro a pessoa imagina o que o robô deve fazer, depois monta, testa e melhora.",
+    "Para criar um robô, muitas vezes trabalham juntos engenheiros mecânicos, elétricos, eletrônicos e de computação. Cada um ajuda numa parte do quebra-cabeça.",
+    "Engenharia e robôs combinam muito. A engenharia ajuda a construir o corpo, os circuitos, os sensores e o jeitinho de o robô funcionar no mundo real.",
+    "Tem robô com rodas, com braços, com câmera e até com sensores para não bater nas coisas. Cada robô é feito pensando em uma missão.",
+    "Alguns robôs ajudam a explorar lugares difíceis, como o fundo do mar, fábricas perigosas ou até outros planetas. Eu acho isso muito corajoso para um monte de parafusos.",
+    "Um engenheiro que faz robôs precisa observar problemas e pensar: como essa máquina pode ajudar? Aí entram desenhos, testes, fios, programas e muitas melhorias.",
+    "Robótica é quando várias áreas se encontram para dar vida a uma máquina inteligente. Tem um pouquinho de engenharia, programação, mecânica e eletrônica tudo junto.",
+    "Eu gosto de dizer que um robô é uma ideia que ganhou corpo, energia e missão. Quando a engenharia encontra a imaginação, nascem coisas bem legais.",
+    "Quando alguém pergunta quem faz robôs, a resposta mais bonita é: pessoas curiosas, estudiosas e criativas, que usam engenharia para transformar ideias em máquinas úteis.",
+    "Robôs não aparecem prontos do nada. Alguém desenha, escolhe peças, escreve programas, testa erros, conserta e vai melhorando até tudo funcionar.",
+]
+
 ENGINEERING_FIELD_LINES = [
     "Engenharia é a arte de transformar ideias em coisas úteis que funcionam no mundo real.",
     "A engenharia junta criatividade, ciência e vontade de resolver problemas. É tipo um superpoder com capacete imaginário.",
@@ -109,6 +124,7 @@ STATIC_RESPONSES = {
     "sing": "Eu ainda estou treinando minhas músicas de robô, mas posso falar com muita vontade.",
     "dance": "Eu ainda não danço com os pés, mas posso dançar com a voz e com carinhas divertidas.",
     "inside": "Dentro de mim tem computador, programas, energia e um monte de ideias organizadas.",
+    "robot_talk": ROBOT_TALK_LINES[0],
     "engineer_profession": ENGINEER_PROFESSION_LINES[0],
     "engineering_field": ENGINEERING_FIELD_LINES[0],
     "electronics": "Eletrônica é quando usamos energia, sinais e peças para fazer máquinas inteligentes funcionarem.",

@@ -5,7 +5,7 @@ from app.dialog.intents import IntentClassifier
 from app.dialog.ollama_client import OllamaClient
 import random
 
-from app.dialog.responses import CURIOSITY_LINES, ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, STATIC_RESPONSES
+from app.dialog.responses import CURIOSITY_LINES, ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, ROBOT_TALK_LINES, STATIC_RESPONSES
 from app.dialog.safety import SafetyFilter
 from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_school_demo_fallback
 
@@ -57,6 +57,11 @@ class DialogueManager:
             "vamos explorar",
             "lindo, roupas são ótimas",
             "claro, a gente dá",
+            "olá! bem-vindo ao mundo",
+            "olá! aí, você está aqui",
+            "o engenho é o sistema",
+            "um ingenheiro é um homem",
+            "o hobos é um animal",
         ]
         if any(fragment in normalized_reply for fragment in suspicious_fragments):
             return True
@@ -88,6 +93,9 @@ class DialogueManager:
 
         if intent.name == "joke":
             return self._remember(self._pick_rotating_line(JOKE_LINES), "local")
+
+        if intent.name == "robot_talk":
+            return self._remember(self._pick_rotating_line(ROBOT_TALK_LINES), "local")
 
         if intent.name == "engineer_profession":
             return self._remember(self._pick_rotating_line(ENGINEER_PROFESSION_LINES), "local")

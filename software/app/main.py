@@ -325,16 +325,18 @@ class KidRoboCLI:
 
                 if self.fluid_touch_demo and self.touch:
                     prompt = "[touch-demo] toque na tela para escutar agora > " if self.awaiting_touch_to_listen else "[touch-demo] toque na tela para começar > "
-                    if not fluid_touch_prompt_shown:
-                        print(prompt, end="", flush=True)
-                        fluid_touch_prompt_shown = True
-                    touched = self.touch.wait_for_touch(STANDBY_POLL_SECONDS)
-                    if touched:
-                        print()
+                    text = self.timed_input(prompt, STANDBY_POLL_SECONDS, repeat_prompt=not fluid_touch_prompt_shown)
+                    fluid_touch_prompt_shown = True
+                    if text is not None:
+                        text = text.strip()
+                        if text.lower() == "sair":
+                            print("Encerrando KidRobo.")
+                            break
+                        continue
+                    touched = self.touch.wait_for_touch(0.01)
                     standby_prompt_shown = True
                     if not touched:
                         if self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
-                            print()
                             idle_line = random_school_demo_idle_line(recent_lines=self.recent_idle_lines)
                             self.recent_idle_lines.append(idle_line)
                             self.recent_idle_lines = self.recent_idle_lines[-5:]
