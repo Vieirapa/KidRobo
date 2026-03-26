@@ -43,7 +43,7 @@ class KidRoboCLI:
         self.fluid_touch_demo = fluid_touch_demo
         self.display_enabled = display_enabled
         self.state = RobotState.STANDBY
-        self.dialog = DialogueManager(school_demo=self.school_demo)
+        self.dialog = DialogueManager(school_demo=self.school_demo, demo_guardrails=self.fluid_touch_demo)
         self.audio = AudioInput()
         self.display = DisplayManager()
         self.display.enabled = self.display_enabled

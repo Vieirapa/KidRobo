@@ -11,8 +11,9 @@ from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_
 
 
 class DialogueManager:
-    def __init__(self, school_demo: bool = False) -> None:
+    def __init__(self, school_demo: bool = False, demo_guardrails: bool = False) -> None:
         self.school_demo = school_demo
+        self.demo_guardrails = demo_guardrails
         self.intent_classifier = IntentClassifier()
         self.safety = SafetyFilter()
         self.ollama = OllamaClient()
@@ -35,6 +36,42 @@ class DialogueManager:
         available = [line for line in lines if line not in recent]
         pool = available or lines
         return pool[0] if len(pool) == 1 else random.choice(pool)
+
+    def _looks_bad_for_demo(self, user_text: str, reply: str) -> bool:
+        normalized_user = user_text.strip().lower()
+        normalized_reply = reply.strip().lower()
+
+        if not normalized_reply:
+            return True
+
+        suspicious_fragments = [
+            "aqui está a resposta",
+            "resposta rápida e lúdica",
+            "agradeço sua pergunta",
+            "visão bastante geral",
+            "claro, agradeço",
+            "pergunta da criança",
+            "kidrobo:",
+        ]
+        if any(fragment in normalized_reply for fragment in suspicious_fragments):
+            return True
+
+        weird_starts = [
+            "olá, pequena",
+            "obrigado, criança",
+            "a corda roubou",
+            "uma perna e um pavo",
+        ]
+        if any(normalized_reply.startswith(fragment) for fragment in weird_starts):
+            return True
+
+        if len(normalized_reply.split()) < 4:
+            return True
+
+        if normalized_user and normalized_reply == normalized_user:
+            return True
+
+        return False
 
     def reply(self, text: str) -> tuple[str, str]:
         intent = self.intent_classifier.classify(text)
@@ -59,7 +96,10 @@ class DialogueManager:
             try:
                 llm_response = self.ollama.generate(text)
                 if llm_response:
-                    return self._remember(llm_response, "ollama")
+                    if self.demo_guardrails and self._looks_bad_for_demo(text, llm_response):
+                        print("[aviso] resposta do Ollama rejeitada pelos guardrails da demo; usando fallback local")
+                    else:
+                        return self._remember(llm_response, "ollama")
             except RuntimeError as exc:
                 print(f"[aviso] fallback local após falha no Ollama: {exc}")
 
