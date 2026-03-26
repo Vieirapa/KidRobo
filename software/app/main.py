@@ -62,6 +62,7 @@ class KidRoboCLI:
         self.recent_idle_lines: list[str] = []
         self.recent_turn_on_lines: list[str] = []
         self.touch = self._build_touch_input()
+        self.awaiting_touch_to_listen = False
 
         try:
             self.stt = FasterWhisperEngine()
@@ -192,16 +193,18 @@ class KidRoboCLI:
         }
         return normalized in commands
 
-    def go_to_standby(self, reason: str | None = None) -> None:
+    def go_to_standby(self, reason: str | None = None, preserve_touch_wait: bool = False) -> None:
         if reason:
             print(f"[estado] voltando para standby: {reason}")
         self.pending_text = ""
         self.pending_response = ""
         self.pending_source = "unknown"
+        if not preserve_touch_wait:
+            self.awaiting_touch_to_listen = False
         self.latency_marks = {}
         self.clear_session_timer()
         self.state = RobotState.STANDBY
-        if self.school_demo:
+        if self.school_demo or self.fluid_touch_demo:
             self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
         self.set_face(FaceState.STANDBY)
 
@@ -235,7 +238,23 @@ class KidRoboCLI:
         self.set_face(FaceState.WAITING, animate=True)
         timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
 
-        if self.school_demo or self.fluid_touch_demo:
+        if self.fluid_touch_demo:
+            if self.awaiting_touch_to_listen:
+                if self.touch:
+                    print("[touch-demo] toque na tela para escutar agora > ", end="", flush=True)
+                    touched = self.touch.wait_for_touch(timeout_seconds)
+                    print()
+                    if not touched:
+                        return None
+                else:
+                    trigger = self.timed_input("[touch-demo] Enter para escutar agora > ", timeout_seconds)
+                    if trigger is None:
+                        return None
+                self.awaiting_touch_to_listen = False
+            self.reset_session_timer()
+            return self.capture_audio()
+
+        if self.school_demo:
             if self.touch:
                 print("[school-demo] toque na tela para escutar agora > ", end="", flush=True)
                 touched = self.touch.wait_for_touch(timeout_seconds)
@@ -302,7 +321,8 @@ class KidRoboCLI:
                 self.set_face(FaceState.STANDBY)
 
                 if self.fluid_touch_demo and self.touch:
-                    print("[touch-demo] toque na tela para começar > ", end="", flush=True)
+                    prompt = "[touch-demo] toque na tela para escutar agora > " if self.awaiting_touch_to_listen else "[touch-demo] toque na tela para começar > "
+                    print(prompt, end="", flush=True)
                     touched = self.touch.wait_for_touch(STANDBY_POLL_SECONDS)
                     print()
                     standby_prompt_shown = True
@@ -316,6 +336,7 @@ class KidRoboCLI:
                         continue
                     print("[touch] toque detectado em modo fluido")
                     standby_prompt_shown = False
+                    self.awaiting_touch_to_listen = False
                     self.start_latency_trace()
                     self.reset_session_timer()
                     self.state = RobotState.LISTENING
@@ -354,10 +375,8 @@ class KidRoboCLI:
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
                 if self.fluid_touch_demo:
-                    self.pending_source = "touch-demo"
-                    self.pending_response = ""
-                    self.reset_session_timer()
-                    self.state = RobotState.STANDBY
+                    self.awaiting_touch_to_listen = True
+                    self.go_to_standby("aguardando primeiro toque do modo fluido", preserve_touch_wait=True)
                     continue
                 if self.school_demo:
                     wake_line = random_school_demo_wake_line(recent_lines=self.recent_wake_lines)
@@ -372,12 +391,20 @@ class KidRoboCLI:
 
             elif self.state == RobotState.LISTENING:
                 if self.session_expired():
-                    self.go_to_standby("tempo de espera esgotado")
+                    if self.fluid_touch_demo:
+                        self.awaiting_touch_to_listen = True
+                        self.go_to_standby("tempo de espera esgotado", preserve_touch_wait=True)
+                    else:
+                        self.go_to_standby("tempo de espera esgotado")
                     continue
 
                 user_text = self.capture_user_input()
                 if user_text is None:
-                    self.go_to_standby("1 minuto sem interação")
+                    if self.fluid_touch_demo:
+                        self.awaiting_touch_to_listen = True
+                        self.go_to_standby("1 minuto sem interação", preserve_touch_wait=True)
+                    else:
+                        self.go_to_standby("1 minuto sem interação")
                 elif not user_text:
                     print("[aviso] Não entendi nada. Pode tentar de novo ou pedir para voltar ao standby.")
                     self.state = RobotState.LISTENING
