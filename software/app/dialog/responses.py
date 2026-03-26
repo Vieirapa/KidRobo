@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 STATIC_RESPONSES = {
-    "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar?",
+    "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar comigo?",
     "name": "Meu nome é KidRobo. Eu sou um robozinho curioso e brincalhão.",
     "age": "Eu sou um robô e estou aprendendo todos os dias. Posso dizer que sou novinho e curioso.",
     "creator": "Eu fui montado com muito carinho pelo pai da Maria Antonia. Isso é bem especial para mim.",

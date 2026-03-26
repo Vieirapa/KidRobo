@@ -16,6 +16,7 @@ except Exception:
 
 from app.config import (
     AUDIO_CHANNELS,
+    AUDIO_FALLBACK_SAMPLE_RATES,
     AUDIO_RECORD_SECONDS,
     AUDIO_SAMPLE_RATE,
     AUDIO_SILENCE_CHUNKS,
@@ -43,11 +44,20 @@ class AudioInput:
             self.use_vad = False
 
     def _resolve_sample_rate(self, preferred_rate: int) -> int:
-        try:
-            sd.check_input_settings(samplerate=preferred_rate, channels=self.channels, dtype="float32")
-            return preferred_rate
-        except Exception:
-            pass
+        candidate_rates = [preferred_rate, *AUDIO_FALLBACK_SAMPLE_RATES]
+        seen = set()
+
+        for rate in candidate_rates:
+            if rate in seen:
+                continue
+            seen.add(rate)
+            try:
+                sd.check_input_settings(samplerate=rate, channels=self.channels, dtype="float32")
+                if rate != preferred_rate:
+                    print(f"[aviso] sample rate {preferred_rate} Hz não suportado pelo dispositivo de captura; usando {rate} Hz.")
+                return rate
+            except Exception:
+                continue
 
         try:
             device_info = sd.query_devices(kind="input")

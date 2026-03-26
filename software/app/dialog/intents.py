@@ -13,7 +13,12 @@ class IntentClassifier:
     def classify(self, text: str) -> IntentResult:
         normalized = text.strip().lower()
 
-        if any(token in normalized for token in ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite"]):
+        greeting_tokens = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite"]
+        if any(token in normalized for token in greeting_tokens):
+            if any(marker in normalized for marker in ["kidrobo", "kid robo", "robô", "robo", "tudo bem", "tudo bom"]):
+                return IntentResult("greeting")
+            return IntentResult("greeting")
+        if normalized in {"kidrobo", "kid robo", "oi kidrobo", "olá kidrobo", "ola kidrobo", "oi robo", "oi robô"}:
             return IntentResult("greeting")
         if "seu nome" in normalized or "como você se chama" in normalized:
             return IntentResult("name")
