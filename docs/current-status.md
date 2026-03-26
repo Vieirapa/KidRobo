@@ -29,6 +29,7 @@ O foco agora não é mais “começar”, e sim **lapidar robustez, UX real e co
 ### Voz e diálogo
 - STT local com `faster-whisper`
 - TTS local com `espeak-ng`
+- ajuste mais promissor atual para demo em PT-BR: voz `pt-br+f4` com taxa `160`
 - resposta híbrida com:
   - intents/respostas locais
   - fallback para Ollama em perguntas abertas

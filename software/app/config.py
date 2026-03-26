@@ -38,8 +38,8 @@ STT_DEVICE = "cpu"
 
 ENABLE_TTS = True
 TTS_ENGINE = "espeak"
-TTS_VOICE = "pt-br"
-TTS_RATE = 145
+TTS_VOICE = "pt-br+f4"
+TTS_RATE = 160
 TTS_VOLUME = 170
 
 DISPLAY_ENABLED = False
