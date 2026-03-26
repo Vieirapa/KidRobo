@@ -62,6 +62,8 @@ class KidRoboCLI:
 
     def set_face(self, state: FaceState, animate: bool = False) -> None:
         self.display.set_state(state, render=not animate)
+        if not self.display_enabled:
+            return
         if animate:
             frames = self.display.animate_state(state)
             if frames:
