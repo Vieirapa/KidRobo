@@ -23,6 +23,7 @@ from app.dialog.manager import DialogueManager
 from app.dialog.school_demo_prompts import (
     random_idle_interval_seconds,
     random_school_demo_idle_line,
+    random_school_demo_turn_on_line,
     random_school_demo_wake_line,
 )
 from app.display import DisplayManager, FaceState
@@ -239,6 +240,11 @@ class KidRoboCLI:
         print(
             f"Depois de acordar, o KidRobo só volta para standby com o comando explícito ou após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem interação.\n"
         )
+
+        if self.school_demo:
+            time.sleep(3.5)
+            self.speak(random_school_demo_turn_on_line())
+            self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
 
         standby_prompt_shown = False
 
