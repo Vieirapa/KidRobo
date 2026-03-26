@@ -20,6 +20,11 @@ from app.config import (
     WAKE_WORD,
 )
 from app.dialog.manager import DialogueManager
+from app.dialog.school_demo_prompts import (
+    random_idle_interval_seconds,
+    random_school_demo_idle_line,
+    random_school_demo_wake_line,
+)
 from app.display import DisplayManager, FaceState
 from app.state_machine import RobotState
 from app.stt import FasterWhisperEngine
@@ -46,6 +51,7 @@ class KidRoboCLI:
         self.audio_file = Path("/tmp/kidrobo_input.wav")
         self.session_deadline = None
         self.latency_marks: dict[str, float] = {}
+        self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds() if self.school_demo else None
 
         try:
             self.stt = FasterWhisperEngine()
@@ -164,6 +170,8 @@ class KidRoboCLI:
         self.latency_marks = {}
         self.clear_session_timer()
         self.state = RobotState.STANDBY
+        if self.school_demo:
+            self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
         self.set_face(FaceState.STANDBY)
 
     def capture_audio(self) -> str | None:
@@ -241,6 +249,9 @@ class KidRoboCLI:
                 text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS, repeat_prompt=not standby_prompt_shown)
                 standby_prompt_shown = True
                 if text is None:
+                    if self.school_demo and self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
+                        self.speak(random_school_demo_idle_line())
+                        self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
                     continue
                 text = text.strip()
                 if text.lower() == "sair":
@@ -258,7 +269,7 @@ class KidRoboCLI:
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
                 if self.school_demo:
-                    self.speak("Oi! Toque para falar comigo. Eu vou ouvir você com atenção.")
+                    self.speak(random_school_demo_wake_line())
                 else:
                     self.speak("Oi! Estou ouvindo! Pode falar.")
                 self.start_latency_trace()
