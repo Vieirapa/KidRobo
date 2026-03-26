@@ -14,17 +14,21 @@ class IntentClassifier:
         normalized = text.strip().lower()
 
         greeting_tokens = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite"]
+        robo_markers = [
+            "kidrobo", "kid robo", "robô", "robo", "robota", "hobo", "hubo", "jubo", "de robo", "de robô",
+            "tudo bem", "tudo bom"
+        ]
         if any(token in normalized for token in greeting_tokens):
-            if any(marker in normalized for marker in ["kidrobo", "kid robo", "robô", "robo", "tudo bem", "tudo bom"]):
+            if any(marker in normalized for marker in robo_markers):
                 return IntentResult("greeting")
             return IntentResult("greeting")
-        if normalized in {"kidrobo", "kid robo", "oi kidrobo", "olá kidrobo", "ola kidrobo", "oi robo", "oi robô"}:
+        if normalized in {"kidrobo", "kid robo", "oi kidrobo", "olá kidrobo", "ola kidrobo", "oi robo", "oi robô", "que jubo", "de hobo", "de hubo"}:
             return IntentResult("greeting")
         if "seu nome" in normalized or "como você se chama" in normalized:
             return IntentResult("name")
         if "quantos anos" in normalized or "sua idade" in normalized or "você tem quantos anos" in normalized:
             return IntentResult("age")
-        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized:
+        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized or "fale sobre você" in normalized or "me fale sobre você" in normalized or "me fale sobre voce" in normalized:
             return IntentResult("creator")
         if "você é de verdade" in normalized or "voce e de verdade" in normalized or "você é um robô de verdade" in normalized or "voce e um robo de verdade" in normalized:
             return IntentResult("real_robot")

@@ -17,6 +17,7 @@ except Exception:
 from app.config import (
     AUDIO_CHANNELS,
     AUDIO_FALLBACK_SAMPLE_RATES,
+    AUDIO_PRE_ROLL_SECONDS,
     AUDIO_RECORD_SECONDS,
     AUDIO_SAMPLE_RATE,
     AUDIO_SILENCE_CHUNKS,
@@ -101,6 +102,8 @@ class AudioInput:
         start = time.time()
 
         with sd.InputStream(samplerate=self.sample_rate, channels=self.channels, dtype="float32") as stream:
+            if AUDIO_PRE_ROLL_SECONDS > 0:
+                time.sleep(AUDIO_PRE_ROLL_SECONDS)
             while time.time() - start < max_seconds:
                 chunk, _ = stream.read(chunk_size)
                 captured.append(chunk.copy())
@@ -143,6 +146,8 @@ class AudioInput:
             return self.record_until_silence(output_path, max_seconds=max_seconds)
 
         with stream:
+            if AUDIO_PRE_ROLL_SECONDS > 0:
+                time.sleep(AUDIO_PRE_ROLL_SECONDS)
             while time.monotonic() < deadline:
                 chunk, _ = stream.read(self.frame_size)
                 frame = chunk.copy()
