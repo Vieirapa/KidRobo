@@ -64,6 +64,12 @@ class IntentClassifier:
             return IntentResult("dance")
         if "o que tem dentro" in normalized or "o que tem aí dentro" in normalized or "o que tem ai dentro" in normalized:
             return IntentResult("inside")
+        if "engenharia" in normalized or "engenheiro" in normalized or "engenheira" in normalized:
+            return IntentResult("engineering")
+        if "eletrônica" in normalized or "eletronica" in normalized or "eletricidade" in normalized or "eletricista" in normalized:
+            return IntentResult("electronics")
+        if "apresentação" in normalized or "apresentacao" in normalized or "escola" in normalized or "dia das profissões" in normalized or "dia das profissoes" in normalized:
+            return IntentResult("presentation")
         if "outra" in normalized and ("curiosidade" in normalized or "conte" in normalized or "me conte" in normalized):
             return IntentResult("another_curiosity")
         if "curiosidade" in normalized or "me conta algo" in normalized or "me fale algo" in normalized:

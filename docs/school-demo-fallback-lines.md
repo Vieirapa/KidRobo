@@ -25,6 +25,8 @@ As frases devem incentivar coisas como:
 - perguntar o nome do robô
 - pedir para contar
 - pedir brincadeira simples
+- pedir algo sobre engenharia
+- pedir algo sobre robôs e eletrônica
 
 ## Evitar
 - frases longas

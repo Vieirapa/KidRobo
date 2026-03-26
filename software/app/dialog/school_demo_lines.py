@@ -8,6 +8,8 @@ SCHOOL_DEMO_FALLBACK_LINES = [
     "Hum, essa parte ficou confusa para mim. Posso brincar, contar ou falar sobre robôs.",
     "Não peguei direitinho a pergunta. Quer ouvir uma curiosidade bem legal?",
     "Posso conversar com você! Se quiser, pergunte meu nome ou peça uma curiosidade.",
+    "Se quiser, eu posso falar sobre engenharia, robôs ou contar uma curiosidade.",
+    "Quer que eu conte uma curiosidade sobre engenharia ou sobre como os robôs funcionam?",
 ]
 
 
