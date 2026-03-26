@@ -34,6 +34,14 @@ python scripts/test_touchscreen.py --seconds 15
 Se o touch estiver correto, o script detectará um ou mais toques e mostrará o device usado.
 No `school-demo`, quando houver touchscreen detectado, o KidRobo também passa a aceitar toque na tela para sair do standby e iniciar a escuta.
 
+Para um fluxo de apresentação mais natural, use o modo fluido:
+
+```bash
+python -m app.main --mode school-demo-fluid --no-display
+```
+
+Nesse modo, o KidRobo liga, fala a frase inicial e depois fica apenas esperando toque na tela para começar a ouvir. Após responder, ele continua em escuta automática. Só volta a esperar toque quando houver timeout sem fala detectável.
+
 Fluxo do teste:
 1. digitar `kidrobo`
 2. escolher `t` para texto ou `a` para áudio

@@ -37,9 +37,10 @@ from app.tts import TTSManager
 
 
 class KidRoboCLI:
-    def __init__(self, input_mode: str = "auto", school_demo: bool = False, display_enabled: bool = True) -> None:
+    def __init__(self, input_mode: str = "auto", school_demo: bool = False, display_enabled: bool = True, fluid_touch_demo: bool = False) -> None:
         self.input_mode = input_mode
         self.school_demo = school_demo
+        self.fluid_touch_demo = fluid_touch_demo
         self.display_enabled = display_enabled
         self.state = RobotState.STANDBY
         self.dialog = DialogueManager(school_demo=self.school_demo)
@@ -76,7 +77,7 @@ class KidRoboCLI:
         self.display.set_state(FaceState.STANDBY, render=False)
 
     def _build_touch_input(self) -> TouchInput | None:
-        if not self.school_demo or not TOUCH_ENABLED:
+        if not (self.school_demo or self.fluid_touch_demo) or not TOUCH_ENABLED:
             return None
 
         try:
@@ -234,7 +235,7 @@ class KidRoboCLI:
         self.set_face(FaceState.WAITING, animate=True)
         timeout_seconds = max(1, int(self.session_deadline - time.monotonic())) if self.session_deadline else SESSION_IDLE_TIMEOUT_SECONDS
 
-        if self.school_demo:
+        if self.school_demo or self.fluid_touch_demo:
             if self.touch:
                 print("[school-demo] toque na tela para escutar agora > ", end="", flush=True)
                 touched = self.touch.wait_for_touch(timeout_seconds)
@@ -272,18 +273,26 @@ class KidRoboCLI:
         print(f"Wake word simulada: {WAKE_WORD}")
         print(f"Modelo Ollama configurado: {OLLAMA_MODEL}")
         print(f"Modo de entrada: {self.input_mode}")
-        print("Digite 'kidrobo' para acordar, 'sair' para encerrar.")
-        print(
-            f"Depois de acordar, o KidRobo só volta para standby com o comando explícito ou após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem interação.\n"
-        )
+        if self.fluid_touch_demo:
+            print("Toque na tela para começar a conversar, ou digite 'sair' para encerrar.")
+            print(
+                f"Após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem fala detectável, o KidRobo volta a esperar um toque na tela.\n"
+            )
+        else:
+            print("Digite 'kidrobo' para acordar, 'sair' para encerrar.")
+            print(
+                f"Depois de acordar, o KidRobo só volta para standby com o comando explícito ou após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem interação.\n"
+            )
 
-        if self.school_demo:
+        if self.school_demo or self.fluid_touch_demo:
             time.sleep(3.5)
             turn_on_line = random_school_demo_turn_on_line(recent_lines=self.recent_turn_on_lines)
             self.recent_turn_on_lines.append(turn_on_line)
             self.recent_turn_on_lines = self.recent_turn_on_lines[-5:]
             self.speak(turn_on_line)
             self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
+            if self.fluid_touch_demo:
+                self.state = RobotState.WAKE_DETECTED
 
         standby_prompt_shown = False
 
@@ -291,6 +300,27 @@ class KidRoboCLI:
             if self.state == RobotState.STANDBY:
                 self.clear_session_timer()
                 self.set_face(FaceState.STANDBY)
+
+                if self.fluid_touch_demo and self.touch:
+                    print("[touch-demo] toque na tela para começar > ", end="", flush=True)
+                    touched = self.touch.wait_for_touch(STANDBY_POLL_SECONDS)
+                    print()
+                    standby_prompt_shown = True
+                    if not touched:
+                        if self.next_idle_line_at is not None and time.monotonic() >= self.next_idle_line_at:
+                            idle_line = random_school_demo_idle_line(recent_lines=self.recent_idle_lines)
+                            self.recent_idle_lines.append(idle_line)
+                            self.recent_idle_lines = self.recent_idle_lines[-5:]
+                            self.speak(idle_line)
+                            self.next_idle_line_at = time.monotonic() + random_idle_interval_seconds()
+                        continue
+                    print("[touch] toque detectado em modo fluido")
+                    standby_prompt_shown = False
+                    self.start_latency_trace()
+                    self.reset_session_timer()
+                    self.state = RobotState.LISTENING
+                    continue
+
                 touched = False
                 text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS, repeat_prompt=not standby_prompt_shown)
                 standby_prompt_shown = True
@@ -323,6 +353,12 @@ class KidRoboCLI:
 
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)
+                if self.fluid_touch_demo:
+                    self.pending_source = "touch-demo"
+                    self.pending_response = ""
+                    self.reset_session_timer()
+                    self.state = RobotState.STANDBY
+                    continue
                 if self.school_demo:
                     wake_line = random_school_demo_wake_line(recent_lines=self.recent_wake_lines)
                     self.recent_wake_lines.append(wake_line)
@@ -373,6 +409,10 @@ class KidRoboCLI:
                     time.sleep(SCHOOL_DEMO_COOLDOWN_SECONDS)
                 if self.standby_requested(self.pending_text):
                     self.go_to_standby("comando explícito do usuário")
+                elif self.fluid_touch_demo:
+                    self.reset_session_timer()
+                    self.state = RobotState.LISTENING
+                    self.start_latency_trace()
                 elif self.school_demo and not SCHOOL_DEMO_CONTINUE_LISTENING:
                     self.go_to_standby("fim da rodada do school-demo")
                 else:
@@ -417,7 +457,7 @@ class KidRoboDemo:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="KidRobo")
-    parser.add_argument("--mode", choices=["cli", "demo", "school-demo"], default="cli")
+    parser.add_argument("--mode", choices=["cli", "demo", "school-demo", "school-demo-fluid"], default="cli")
     parser.add_argument(
         "--input-mode",
         choices=["auto", "text", "prompt"],
@@ -437,9 +477,11 @@ def main() -> None:
         return
 
     school_demo = args.mode == "school-demo"
+    fluid_touch_demo = args.mode == "school-demo-fluid"
     app = KidRoboCLI(
         input_mode=args.input_mode,
         school_demo=school_demo,
+        fluid_touch_demo=fluid_touch_demo,
         display_enabled=not args.no_display,
     )
     app.run()
