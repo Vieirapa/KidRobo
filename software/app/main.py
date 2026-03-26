@@ -16,6 +16,7 @@ from app.config import (
     SCHOOL_DEMO_CONTINUE_LISTENING,
     SCHOOL_DEMO_COOLDOWN_SECONDS,
     SESSION_IDLE_TIMEOUT_SECONDS,
+    STANDBY_POLL_SECONDS,
     WAKE_WORD,
 )
 from app.dialog.manager import DialogueManager
@@ -230,8 +231,11 @@ class KidRoboCLI:
         while True:
             if self.state == RobotState.STANDBY:
                 self.clear_session_timer()
-                self.set_face(FaceState.STANDBY, animate=True)
-                text = input("[standby] > ").strip()
+                self.set_face(FaceState.STANDBY)
+                text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS)
+                if text is None:
+                    continue
+                text = text.strip()
                 if text.lower() == "sair":
                     print("Encerrando KidRobo.")
                     break
