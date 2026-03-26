@@ -131,11 +131,11 @@ class KidRoboCLI:
     def session_expired(self) -> bool:
         return self.session_deadline is not None and time.monotonic() >= self.session_deadline
 
-    def timed_input(self, prompt: str, timeout_seconds: int) -> str | None:
-        print(prompt, end="", flush=True)
+    def timed_input(self, prompt: str, timeout_seconds: int, repeat_prompt: bool = True) -> str | None:
+        if repeat_prompt:
+            print(prompt, end="", flush=True)
         ready, _, _ = select.select([sys.stdin], [], [], timeout_seconds)
         if not ready:
-            print()
             return None
         return sys.stdin.readline().rstrip("\n")
 
@@ -232,11 +232,14 @@ class KidRoboCLI:
             f"Depois de acordar, o KidRobo só volta para standby com o comando explícito ou após {SESSION_IDLE_TIMEOUT_SECONDS} segundos sem interação.\n"
         )
 
+        standby_prompt_shown = False
+
         while True:
             if self.state == RobotState.STANDBY:
                 self.clear_session_timer()
                 self.set_face(FaceState.STANDBY)
-                text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS)
+                text = self.timed_input("[standby] > ", STANDBY_POLL_SECONDS, repeat_prompt=not standby_prompt_shown)
+                standby_prompt_shown = True
                 if text is None:
                     continue
                 text = text.strip()
@@ -244,11 +247,13 @@ class KidRoboCLI:
                     print("Encerrando KidRobo.")
                     break
                 if text.lower() == WAKE_WORD:
+                    standby_prompt_shown = False
                     self.start_latency_trace()
                     self.reset_session_timer()
                     self.state = RobotState.WAKE_DETECTED
                 else:
                     print("... aguardando wake word ...")
+                    standby_prompt_shown = False
 
             elif self.state == RobotState.WAKE_DETECTED:
                 self.set_face(FaceState.HAPPY)

@@ -53,6 +53,7 @@ source "$VENV_DIR/bin/activate"
 
 log "Atualizando pip e instalando dependências Python"
 pip install --upgrade pip wheel setuptools
+pip install "setuptools<81"
 pip install -r "$INSTALL_DIR/software/requirements.txt"
 
 if ! command -v ollama >/dev/null 2>&1; then
