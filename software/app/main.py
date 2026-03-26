@@ -32,7 +32,7 @@ class KidRoboCLI:
         self.school_demo = school_demo
         self.display_enabled = display_enabled
         self.state = RobotState.STANDBY
-        self.dialog = DialogueManager()
+        self.dialog = DialogueManager(school_demo=self.school_demo)
         self.audio = AudioInput()
         self.display = DisplayManager()
         self.display.enabled = self.display_enabled

@@ -116,6 +116,8 @@ cd software
 python -m app.main --mode school-demo
 ```
 
+No `school-demo`, o KidRobo prioriza respostas locais e fallback local amigável, sem depender do Ollama para manter a apresentação rápida e previsível.
+
 #### Modo demo escolar sem display (para testar fluxo)
 ```bash
 cd software
