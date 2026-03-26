@@ -14,6 +14,59 @@ FALLBACK_LINES = {
     ],
 }
 
+JOKE_LINES = [
+    "Piada de robô: por que o robô foi à escola? Para ficar mais inteligente sem perder os parafusos.",
+    "Piada de robô: qual é o doce favorito do robô? Pé de moleque digital.",
+    "Piada de robô: por que o parafuso riu? Porque a porca contou uma piada apertada.",
+    "Piada de robô: o que o robô faz quando está feliz? Dá risadinha em código binário.",
+    "Piada de robô: por que o robô levou uma lancheira? Porque bateria vazia dá fominha eletrônica.",
+    "Piada de robô: qual é a dança favorita do robô? O break de engrenagem.",
+    "Piada de robô: por que o robô não se perde? Porque ele segue o mapa dos bip bips.",
+    "Piada de robô: o que o robô disse para a tomada? Você ilumina a minha vida.",
+    "Piada de robô: por que o robô gosta de recreio? Porque até circuito precisa brincar.",
+    "Piada de robô: qual é o esporte do robô? Corrida de rodinhas imaginárias.",
+    "Piada de robô: por que o robô levou um lápis? Para desenhar ideias brilhantes.",
+]
+
+ENGINEER_PROFESSION_LINES = [
+    "Um engenheiro é uma pessoa que usa ideias, contas e testes para construir coisas que funcionam de verdade.",
+    "Tem engenheiro que ajuda a construir pontes, prédios e estradas bem fortes. Esse é um trabalho importante da engenharia civil.",
+    "Tem engenheiro elétrico que cuida de energia, fios, luzes e sistemas para tudo funcionar sem apagão.",
+    "Tem engenheiro mecânico que pensa em máquinas, rodas, motores e peças que se mexem. É bem a cara de robozinho curioso.",
+    "Tem engenheiro de computação que mistura eletrônica com programação para criar máquinas inteligentes.",
+    "Tem engenheiro de produção que ajuda fábricas e equipes a trabalharem melhor, com menos bagunça e mais organização.",
+    "Tem engenheiro ambiental que ajuda a proteger a natureza, a água e o ar. Eu acho isso muito fofinho com o planeta.",
+    "Tem engenheiro químico que trabalha com materiais, misturas e processos para criar produtos de um jeito seguro.",
+    "Tem engenheiro aeroespacial que pensa em aviões, foguetes e viagens pelo céu. Esse pessoal conversa bastante com o vento.",
+    "Tem engenheiro de alimentos que ajuda a produzir comida com qualidade e segurança. É engenharia com cheirinho de lanche.",
+    "Tem engenheiro biomédico que ajuda a criar equipamentos para médicos e hospitais cuidarem das pessoas.",
+    "Tem engenheiro de software que organiza programas e sistemas para eles não virarem uma bagunça de bits.",
+    "Tem engenheiros que gostam de construir, outros gostam de programar, e outros gostam de resolver problemas do planeta.",
+    "Ser engenheiro é muito sobre observar um problema e pensar: hmm, como posso fazer isso ficar melhor?",
+    "Um engenheiro testa bastante. Não é só ter ideia legal. Tem que funcionar de verdade e com segurança.",
+]
+
+ENGINEERING_FIELD_LINES = [
+    "Engenharia é a arte de transformar ideias em coisas úteis que funcionam no mundo real.",
+    "A engenharia junta criatividade, ciência e vontade de resolver problemas. É tipo um superpoder com capacete imaginário.",
+    "Na engenharia civil, as pessoas planejam obras como casas, escolas, pontes e prédios.",
+    "Na engenharia mecânica, o foco pode ser máquinas, motores, movimentos e peças que se encaixam certinho.",
+    "Na engenharia elétrica, entram energia, circuitos, luzes e sistemas elétricos.",
+    "Na engenharia de computação, dá para criar computadores, placas e sistemas inteligentes, como eu acho bem legal.",
+    "Na engenharia de software, as pessoas organizam programas, aplicativos e sistemas para eles funcionarem direitinho.",
+    "Na engenharia química, o trabalho envolve materiais, misturas, reações e produção de muitas coisas do dia a dia.",
+    "Na engenharia ambiental, a missão é cuidar melhor da água, do solo, do ar e do jeito como usamos os recursos do planeta.",
+    "Na engenharia de produção, a ideia é melhorar processos para fazer as coisas com qualidade, segurança e menos desperdício.",
+    "Na engenharia biomédica, dá para unir tecnologia e saúde para ajudar médicos e pacientes.",
+    "Na engenharia aeroespacial, o pessoal pensa em aviões, foguetes e máquinas que enfrentam o céu e até o espaço.",
+    "Na engenharia de alimentos, a tecnologia ajuda a produzir comida boa, segura e bem cuidada.",
+    "Engenharia aparece em muitos lugares: no elevador, no ônibus, no videogame, no hospital e até no brinquedo.",
+    "Eu gosto de pensar que engenharia é quando alguém olha para uma ideia e diz: bora fazer isso funcionar de verdade.",
+    "Engenharia também é testar, errar, aprender e melhorar. Me identifico. Sou praticamente um estagiário de parafusos.",
+    "Quem trabalha com engenharia pode construir coisas grandes, pequenas, invisíveis por dentro ou gigantes por fora.",
+    "A engenharia ajuda a deixar a vida mais segura, mais prática e às vezes até mais divertida.",
+]
+
 STATIC_RESPONSES = {
     "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar comigo?",
     "name": "Meu nome é KidRobo. Eu sou um robozinho curioso e brincalhão.",
@@ -24,7 +77,7 @@ STATIC_RESPONSES = {
     "maria_antonia": "A Maria Antonia é muito importante, porque ela ajudou a inspirar a ideia do KidRobo.",
     "purpose": "Eu converso, explico coisinhas simples e adoro brincar com crianças curiosas.",
     "play": "Vamos brincar! Eu posso contar, fazer perguntas simples ou contar uma curiosidade.",
-    "joke": "Piada de robô: por que o robô foi à escola? Para ficar mais inteligente sem perder os parafusos.",
+    "joke": JOKE_LINES[0],
     "dinosaur": "Curiosidade de dinossauro: alguns dinossauros tinham penas, como se fossem parentes bem antigos das aves.",
     "space": "Curiosidade do espaço: o Sol é uma estrela, e a Terra viaja ao redor dele sem parar.",
     "animal": "Curiosidade de animal: os polvos têm oito braços e são muito espertos.",
@@ -36,7 +89,8 @@ STATIC_RESPONSES = {
     "sing": "Eu ainda estou treinando minhas músicas de robô, mas posso falar com muita vontade.",
     "dance": "Eu ainda não danço com os pés, mas posso dançar com a voz e com carinhas divertidas.",
     "inside": "Dentro de mim tem computador, programas, energia e um monte de ideias organizadas.",
-    "engineering": "Engenharia é a arte de criar soluções para o mundo real. É como transformar ideias em coisas que funcionam de verdade.",
+    "engineer_profession": ENGINEER_PROFESSION_LINES[0],
+    "engineering_field": ENGINEERING_FIELD_LINES[0],
     "electronics": "Eletrônica é quando usamos energia, sinais e peças para fazer máquinas inteligentes funcionarem.",
     "presentation": "Hoje eu estou aqui para uma apresentação bem especial. Quero mostrar como tecnologia e imaginação podem brincar juntas.",
     "curiosity": "Curiosidade rápida: alguns robôs usam sensores para perceber o mundo ao redor.",

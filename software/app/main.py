@@ -63,6 +63,7 @@ class KidRoboCLI:
         self.recent_turn_on_lines: list[str] = []
         self.touch = self._build_touch_input()
         self.awaiting_touch_to_listen = False
+        self.empty_recognition_count = 0
 
         try:
             self.stt = FasterWhisperEngine()
@@ -199,6 +200,7 @@ class KidRoboCLI:
         self.pending_text = ""
         self.pending_response = ""
         self.pending_source = "unknown"
+        self.empty_recognition_count = 0
         if not preserve_touch_wait:
             self.awaiting_touch_to_listen = False
         self.latency_marks = {}
@@ -406,13 +408,19 @@ class KidRoboCLI:
                     else:
                         self.go_to_standby("1 minuto sem interação")
                 elif not user_text:
-                    print("[aviso] Não entendi nada. Pode tentar de novo ou pedir para voltar ao standby.")
-                    self.state = RobotState.LISTENING
+                    self.empty_recognition_count += 1
+                    print(f"[aviso] Não entendi nada. Tentativa vazia {self.empty_recognition_count}/6.")
+                    if self.fluid_touch_demo and self.empty_recognition_count >= 6:
+                        self.awaiting_touch_to_listen = True
+                        self.go_to_standby("muitas tentativas sem texto reconhecido", preserve_touch_wait=True)
+                    else:
+                        self.state = RobotState.LISTENING
                 elif self.standby_requested(user_text):
                     self.pending_source = "local"
                     self.pending_response = "Tá bom! Vou voltar para standby."
                     self.state = RobotState.SPEAKING
                 else:
+                    self.empty_recognition_count = 0
                     self.pending_text = user_text
                     self.state = RobotState.TRANSCRIBING
 

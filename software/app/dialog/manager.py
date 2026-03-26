@@ -3,7 +3,9 @@ from __future__ import annotations
 from app.config import ENABLE_OLLAMA
 from app.dialog.intents import IntentClassifier
 from app.dialog.ollama_client import OllamaClient
-from app.dialog.responses import FALLBACK_LINES, STATIC_RESPONSES
+import random
+
+from app.dialog.responses import ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, STATIC_RESPONSES
 from app.dialog.safety import SafetyFilter
 from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_school_demo_fallback
 
@@ -26,10 +28,25 @@ class DialogueManager:
         recent = set(self.recent_replies)
         available = [line for line in all_fallbacks if line not in recent]
         pool = available or all_fallbacks
-        return pool[0] if len(pool) == 1 else __import__("random").choice(pool)
+        return pool[0] if len(pool) == 1 else random.choice(pool)
+
+    def _pick_rotating_line(self, lines: list[str]) -> str:
+        recent = set(self.recent_replies)
+        available = [line for line in lines if line not in recent]
+        pool = available or lines
+        return pool[0] if len(pool) == 1 else random.choice(pool)
 
     def reply(self, text: str) -> tuple[str, str]:
         intent = self.intent_classifier.classify(text)
+
+        if intent.name == "joke":
+            return self._remember(self._pick_rotating_line(JOKE_LINES), "local")
+
+        if intent.name == "engineer_profession":
+            return self._remember(self._pick_rotating_line(ENGINEER_PROFESSION_LINES), "local")
+
+        if intent.name == "engineering_field":
+            return self._remember(self._pick_rotating_line(ENGINEERING_FIELD_LINES), "local")
 
         if intent.name in STATIC_RESPONSES and intent.name not in {"fallback", "open_question"}:
             return self._remember(STATIC_RESPONSES[intent.name], "local")
