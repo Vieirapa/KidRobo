@@ -26,6 +26,26 @@ JOKE_LINES = [
     "Piada de robô: por que o robô gosta de recreio? Porque até circuito precisa brincar.",
     "Piada de robô: qual é o esporte do robô? Corrida de rodinhas imaginárias.",
     "Piada de robô: por que o robô levou um lápis? Para desenhar ideias brilhantes.",
+    "Piada de robô: por que o robô levou uma escada? Para alcançar a nuvem de dados.",
+    "Piada de robô: qual é a fruta favorita do robô? A pera-fuso. Essa foi bobinha, eu sei.",
+    "Piada de robô: por que o robô foi ao médico? Porque estava com curto de risada.",
+    "Piada de robô: o que o robô faz no banho? Lava os bits e enxágua os bytes.",
+    "Piada de robô: qual é a matéria favorita do robô? Re-cál-cu-lo. Eu falei igual robozinho mesmo.",
+]
+
+CURIOSITY_LINES = [
+    "Curiosidade rápida: alguns robôs usam sensores para perceber o mundo ao redor.",
+    "Curiosidade de robô: alguns robôs seguem linhas, outros desviam de obstáculos e outros até ajudam em hospitais.",
+    "Curiosidade legal: o Sol parece pequeno no céu, mas é tão grande que caberiam muitas Terras dentro dele.",
+    "Curiosidade de animal: os polvos são muito espertos e conseguem abrir potes.",
+    "Curiosidade do espaço: a Lua não tem luz própria. Ela reflete a luz do Sol.",
+    "Curiosidade de engenharia: pontes precisam ser fortes e bem calculadas para aguentar peso e vento.",
+    "Curiosidade de dinossauro: alguns tinham penas, como parentes bem antigos das aves.",
+    "Curiosidade divertida: existem robôs que ajudam a explorar o fundo do mar e outros que vão para Marte.",
+    "Curiosidade do corpo humano: o coração trabalha sem descansar, igual uma bombinha muito dedicada.",
+    "Curiosidade de invenção: uma ideia simples pode virar uma grande máquina quando alguém testa, melhora e monta tudo direitinho.",
+    "Curiosidade de bicho: as abelhas ajudam muitas plantas a crescerem levando pólen de flor em flor.",
+    "Curiosidade tecnológica: um computador entende sinais elétricos super rápidos para fazer contas e mostrar imagens.",
 ]
 
 ENGINEER_PROFESSION_LINES = [
@@ -93,8 +113,8 @@ STATIC_RESPONSES = {
     "engineering_field": ENGINEERING_FIELD_LINES[0],
     "electronics": "Eletrônica é quando usamos energia, sinais e peças para fazer máquinas inteligentes funcionarem.",
     "presentation": "Hoje eu estou aqui para uma apresentação bem especial. Quero mostrar como tecnologia e imaginação podem brincar juntas.",
-    "curiosity": "Curiosidade rápida: alguns robôs usam sensores para perceber o mundo ao redor.",
-    "another_curiosity": "Outra curiosidade: o primeiro robô industrial famoso ajudava em fábricas repetindo movimentos com muita precisão.",
+    "curiosity": CURIOSITY_LINES[0],
+    "another_curiosity": CURIOSITY_LINES[1],
     "robot": "Um robô é uma máquina que pode sentir, pensar de um jeito programado e fazer ações.",
     "count": "Vamos juntos: um, dois, três, quatro, cinco! Quer continuar até dez?",
     "fallback": FALLBACK_LINES["confuso"][0],

@@ -159,4 +159,4 @@ def all_school_demo_prompt_lines() -> list[str]:
 
 
 def random_idle_interval_seconds() -> float:
-    return random.uniform(5.0, 25.0)
+    return random.uniform(4.0, 12.0)

@@ -5,7 +5,7 @@ from app.dialog.intents import IntentClassifier
 from app.dialog.ollama_client import OllamaClient
 import random
 
-from app.dialog.responses import ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, STATIC_RESPONSES
+from app.dialog.responses import CURIOSITY_LINES, ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, STATIC_RESPONSES
 from app.dialog.safety import SafetyFilter
 from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_school_demo_fallback
 
@@ -52,15 +52,25 @@ class DialogueManager:
             "claro, agradeço",
             "pergunta da criança",
             "kidrobo:",
+            "o que você gostaria de saber",
+            "você acha que pode",
+            "vamos explorar",
+            "lindo, roupas são ótimas",
+            "claro, a gente dá",
         ]
         if any(fragment in normalized_reply for fragment in suspicious_fragments):
             return True
 
         weird_starts = [
             "olá, pequena",
+            "olá, querida",
             "obrigado, criança",
             "a corda roubou",
             "uma perna e um pavo",
+            "sim, o engenheiro é",
+            "olá! você saiu",
+            "aí, bode",
+            "eu sou um robô inteligente",
         ]
         if any(normalized_reply.startswith(fragment) for fragment in weird_starts):
             return True
@@ -84,6 +94,9 @@ class DialogueManager:
 
         if intent.name == "engineering_field":
             return self._remember(self._pick_rotating_line(ENGINEERING_FIELD_LINES), "local")
+
+        if intent.name in {"curiosity", "another_curiosity"}:
+            return self._remember(self._pick_rotating_line(CURIOSITY_LINES), "local")
 
         if intent.name in STATIC_RESPONSES and intent.name not in {"fallback", "open_question"}:
             return self._remember(STATIC_RESPONSES[intent.name], "local")
