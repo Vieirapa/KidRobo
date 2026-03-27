@@ -1,7 +1,7 @@
 # Serviço systemd do KidRobo
 
 ## Objetivo
-Executar o KidRobo automaticamente na Raspberry Pi, inicialmente em modo demo contínuo.
+Executar o KidRobo automaticamente na Raspberry Pi para a demo escolar.
 
 ## Instalação
 ```bash
@@ -30,6 +30,7 @@ journalctl --user -u kidrobo.service -f
 ```
 
 ## Observações
-- o serviço atual usa `run_kidrobo.sh --mode demo --loop`
-- isso é ideal para validar boot, áudio e estabilidade básica
-- depois podemos trocar o `ExecStart` para o modo principal com wake word real
+- o serviço atual espera 1 segundo após o boot antes de iniciar
+- antes de subir o app, ele aplica `Mic 12%` e `Auto Gain Control off`
+- o `ExecStart` usa `run_kidrobo.sh --mode school-demo-fluid --no-display`
+- isso é focado na apresentação escolar e em subir direto sem depender de teclado
