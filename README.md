@@ -86,6 +86,8 @@ Depois de acordar com `kidrobo`, o sistema:
 Isso já deixa o projeto bem mais próximo de uma interação real do que o fluxo antigo dependente de ENTER.
 
 ### 2. Modos disponíveis
+> **Importante:** o módulo `app.main` fica dentro de `software/`. Então execute a aplicação a partir de `software/`, ou use `PYTHONPATH=software` se estiver na raiz do projeto.
+
 #### Modo padrão mais próximo do uso real
 ```bash
 cd software
