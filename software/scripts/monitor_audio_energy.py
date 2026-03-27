@@ -2,11 +2,18 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import time
+from pathlib import Path
 from statistics import mean
 
 import numpy as np
 import sounddevice as sd
+
+CURRENT_FILE = Path(__file__).resolve()
+SOFTWARE_DIR = CURRENT_FILE.parent.parent
+if str(SOFTWARE_DIR) not in sys.path:
+    sys.path.insert(0, str(SOFTWARE_DIR))
 
 from app.config import AUDIO_CHANNELS, AUDIO_FALLBACK_SAMPLE_RATES, AUDIO_SAMPLE_RATE
 
