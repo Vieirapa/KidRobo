@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -51,13 +52,27 @@ def format_stats(values: list[float]) -> str:
     )
 
 
+def configure_mic(card: int, mic_level: str, agc_off: bool) -> None:
+    print("=== preparando mixer do microfone ===")
+    subprocess.run(["amixer", "-c", str(card), "sset", "Mic", mic_level], check=True)
+    if agc_off:
+        subprocess.run(["amixer", "-c", str(card), "sset", "Auto Gain Control", "off"], check=True)
+    subprocess.run(["amixer", "-c", str(card), "scontents"], check=True)
+    print()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Monitora a energia real do áudio capturado pelo KidRobo")
     parser.add_argument("--seconds", type=float, default=20.0, help="Tempo total de monitoramento")
     parser.add_argument("--chunk-ms", type=float, default=250.0, help="Tamanho do chunk em ms")
     parser.add_argument("--speak-after", type=float, default=8.0, help="Momento em que a pessoa deve começar a falar")
     parser.add_argument("--threshold", type=float, default=0.025, help="Threshold que queremos comparar")
+    parser.add_argument("--card", type=int, default=3, help="Card ALSA do microfone USB")
+    parser.add_argument("--mic-level", default="12%", help="Nível do Mic a aplicar antes do teste")
+    parser.add_argument("--keep-agc-on", action="store_true", help="Não desligar o Auto Gain Control")
     args = parser.parse_args()
+
+    configure_mic(card=args.card, mic_level=args.mic_level, agc_off=not args.keep_agc_on)
 
     channels = AUDIO_CHANNELS
     sample_rate = resolve_sample_rate(AUDIO_SAMPLE_RATE, channels)
