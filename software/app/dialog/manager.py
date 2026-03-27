@@ -109,7 +109,7 @@ class DialogueManager:
         if intent.name in STATIC_RESPONSES and intent.name not in {"fallback", "open_question"}:
             return self._remember(STATIC_RESPONSES[intent.name], "local")
 
-        if self.school_demo:
+        if self.school_demo or self.demo_guardrails:
             recent_demo_lines = [line for line in self.recent_replies if line in all_school_demo_fallback_lines()]
             return self._remember(random_school_demo_fallback(recent_lines=recent_demo_lines[-5:]), "school-demo-fallback")
 
