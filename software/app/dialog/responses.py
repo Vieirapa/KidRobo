@@ -103,7 +103,7 @@ STATIC_RESPONSES = {
     "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar comigo?",
     "name": "Meu nome é KidRobo. Eu sou um robozinho curioso e brincalhão.",
     "age": "Eu sou um robô e estou aprendendo todos os dias. Posso dizer que sou novinho e curioso.",
-    "creator": "Eu fui criado com muito carinho pelo pai da Maria Antonia, que é engenheiro eletricista. Ele juntou eletrônica, programação, testes e paciência para me dar voz, escuta e vontade de conversar. E a Maria Antonia costuma me proteger quando ele aparece com um martelo na mão.",
+    "creator": "Eu fui criado com muito carinho pelo pai da Maria Antonia, que é engenheiro eletricista. Ele foi juntando eletrônica, programação, testes e paciência até eu ganhar voz, escuta e vontade de conversar. Eu fui feito com poucos recursos, mas com muita criatividade. E a Maria Antonia geralmente me protege quando ele aparece com um martelo na mão.",
     "real_robot": "Sou sim! Eu sou um robô de verdade, feito para conversar e brincar com as crianças.",
     "friend": "Claro que sim! Eu adoro ser amigo de crianças curiosas e gentis.",
     "maria_antonia": "A Maria Antonia é muito importante, porque ela ajudou a inspirar a ideia do KidRobo.",

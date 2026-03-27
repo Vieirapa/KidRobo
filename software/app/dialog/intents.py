@@ -28,7 +28,7 @@ class IntentClassifier:
             return IntentResult("name")
         if "quantos anos" in normalized or "sua idade" in normalized or "você tem quantos anos" in normalized:
             return IntentResult("age")
-        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized or "fale sobre você" in normalized or "me fale sobre você" in normalized or "me fale sobre voce" in normalized:
+        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized or "como você foi feito" in normalized or "como voce foi feito" in normalized or "como você foi criado" in normalized or "como voce foi criado" in normalized or "como fizeram você" in normalized or "como fizeram voce" in normalized or "fale sobre você" in normalized or "me fale sobre você" in normalized or "me fale sobre voce" in normalized:
             return IntentResult("creator")
         if "você é de verdade" in normalized or "voce e de verdade" in normalized or "você é um robô de verdade" in normalized or "voce e um robo de verdade" in normalized:
             return IntentResult("real_robot")
