@@ -12,7 +12,10 @@ Use esta lista antes de apresentar o KidRobo na escola.
 - [ ] microfone USB reconhecido
 - [ ] caixa de som/bluetooth conectada
 - [ ] volume do speaker adequado
+- [ ] `Auto Gain Control` do microfone USB está desligado
+- [ ] ganho manual do microfone USB está em **25%** (ajuste empírico atual mais promissor)
 - [ ] microfone capta voz infantil a curta distância
+- [ ] transcrição continua inteligível com esse ajuste no ambiente real
 - [ ] KidRobo não está se ouvindo excessivamente
 
 ## 3. Software

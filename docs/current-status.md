@@ -78,6 +78,8 @@ Itens que já têm implementação parcial ou direção definida, mas ainda prec
 - thresholds de silêncio e fim de fala
 - adaptação de sample rate ao hardware suportado
 - consistência da transcrição em uso prolongado
+- ajuste empírico mais promissor atual no microfone USB: **AGC desligado + ganho manual em 25%**
+- esse ajuste ainda deve ser revalidado em novos testes de campo
 
 ### Experiência de conversa
 - janela de continuidade da conversa após resposta

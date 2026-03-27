@@ -11,6 +11,11 @@ Validar rapidamente, antes da demo, se o KidRobo está pronto para interagir com
 3. confirmar face de standby na tela
 
 ### Etapa 2 — áudio
+Preparação rápida do microfone:
+- confirmar que o microfone USB está com `Auto Gain Control` desligado
+- confirmar que o ganho manual está em **25%**
+- se a transcrição piorar, revisar primeiro essa regulagem antes de alterar thresholds do software
+
 1. acionar push-to-talk
 2. falar perto do microfone: "Oi, KidRobo"
 3. confirmar se houve transcrição inteligível
