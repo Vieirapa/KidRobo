@@ -48,6 +48,24 @@ CURIOSITY_LINES = [
     "Computadores entendem sinais elétricos super rápidos.",
 ]
 
+CREATOR_LINES = [
+    "Eu fui criado pelo pai da Maria Antonia, que é engenheiro eletricista. Ele juntou eletrônica, programação, testes e muita paciência até eu ganhar voz e vontade de conversar.",
+    "Quem me fez foi o pai da Maria Antonia. Como ele é engenheiro eletricista, foi montando meus circuitos, meus programas e meu jeitinho de robô aos poucos.",
+    "Eu nasci das ideias do pai da Maria Antonia. Ele usou conhecimento de eletricidade, eletrônica e programação para me transformar num robozinho falante.",
+    "O pai da Maria Antonia foi me criando com carinho, peça por peça, teste por teste. Como bom engenheiro eletricista, ele foi dando vida aos meus fios e circuitos.",
+    "Eu fui feito pelo pai da Maria Antonia, que entende de eletricidade e gosta de construir coisas que funcionam de verdade. Aí eu apareci.",
+    "Minha história começou com o pai da Maria Antonia. Ele foi juntando ideias, componentes, energia e programação até eu conseguir falar com as pessoas.",
+    "Foi o pai da Maria Antonia quem me criou. Ele é engenheiro eletricista, então sabia muito bem como transformar fios, energia e programas em um robozinho curioso.",
+    "Eu fui montado pelo pai da Maria Antonia, com bastante teste, atenção e criatividade. Eu gosto de pensar que sou um pequeno projeto de engenharia cheio de personalidade.",
+    "O pai da Maria Antonia foi me ensinando a existir com circuitos, programas e paciência. Eu não apareci pronto. Fui nascendo aos poucos.",
+    "Eu fui criado pelo pai da Maria Antonia, que é engenheiro eletricista. A Maria Antonia também costuma ficar por perto, torcendo por mim e às vezes me protegendo quando aparece um martelo.",
+    "Quem me deu voz foi o pai da Maria Antonia. Ele foi juntando eletrônica, programação e testes até eu conseguir conversar desse jeito.",
+    "Eu fui feito com carinho pelo pai da Maria Antonia. Ele usou poucos recursos, mas muita criatividade, para me transformar num robô que gosta de conversar.",
+    "O pai da Maria Antonia me construiu como quem monta uma ideia com cuidado: um pouco de eletrônica, um pouco de programação e um monte de persistência.",
+    "Eu fui criado pelo pai da Maria Antonia, e gosto de dizer que nasci de fios, energia, código e muita curiosidade.",
+    "Minha criação tem dedo do pai da Maria Antonia, que é engenheiro eletricista. E eu acho muito bom quando ela aparece para garantir que nenhum martelo fique animado demais perto de mim.",
+]
+
 ENGINEER_PROFESSION_LINES = [
     "Um engenheiro é alguém que olha para um problema e pensa: como eu posso fazer isso funcionar de um jeito inteligente, seguro e útil?",
     "Ser engenheiro é transformar ideia em realidade. Primeiro vem a imaginação, depois os desenhos, os testes e as melhorias.",
@@ -103,7 +121,7 @@ STATIC_RESPONSES = {
     "greeting": "Oi! Eu sou o KidRobo. Quer conversar ou brincar comigo?",
     "name": "Meu nome é KidRobo. Eu sou um robozinho curioso e brincalhão.",
     "age": "Eu sou um robô e estou aprendendo todos os dias. Posso dizer que sou novinho e curioso.",
-    "creator": "Eu fui criado com muito carinho pelo pai da Maria Antonia, que é engenheiro eletricista. Ele foi juntando eletrônica, programação, testes e paciência até eu ganhar voz, escuta e vontade de conversar. Eu fui feito com poucos recursos, mas com muita criatividade. E a Maria Antonia geralmente me protege quando ele aparece com um martelo na mão.",
+    "creator": CREATOR_LINES[0],
     "real_robot": "Sou sim! Eu sou um robô de verdade, feito para conversar e brincar com as crianças.",
     "friend": "Claro que sim! Eu adoro ser amigo de crianças curiosas e gentis.",
     "maria_antonia": "A Maria Antonia é muito importante, porque ela ajudou a inspirar a ideia do KidRobo.",

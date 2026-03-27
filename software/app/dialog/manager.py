@@ -5,7 +5,7 @@ from app.dialog.intents import IntentClassifier
 from app.dialog.ollama_client import OllamaClient
 import random
 
-from app.dialog.responses import CURIOSITY_LINES, ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, ROBOT_TALK_LINES, STATIC_RESPONSES
+from app.dialog.responses import CREATOR_LINES, CURIOSITY_LINES, ENGINEERING_FIELD_LINES, ENGINEER_PROFESSION_LINES, FALLBACK_LINES, JOKE_LINES, ROBOT_TALK_LINES, STATIC_RESPONSES
 from app.dialog.safety import SafetyFilter
 from app.dialog.school_demo_lines import all_school_demo_fallback_lines, random_school_demo_fallback
 
@@ -93,6 +93,9 @@ class DialogueManager:
 
         if intent.name == "joke":
             return self._remember(self._pick_rotating_line(JOKE_LINES), "local")
+
+        if intent.name == "creator":
+            return self._remember(self._pick_rotating_line(CREATOR_LINES), "local")
 
         if intent.name == "robot_talk":
             return self._remember(self._pick_rotating_line(ROBOT_TALK_LINES), "local")
