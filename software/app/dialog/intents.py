@@ -13,6 +13,8 @@ class IntentClassifier:
     def classify(self, text: str) -> IntentResult:
         normalized = text.strip().lower()
 
+        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized or "como você foi feito" in normalized or "como voce foi feito" in normalized or "como você foi criada" in normalized or "como voce foi criada" in normalized or "como você foi criado" in normalized or "como voce foi criado" in normalized or "como fizeram você" in normalized or "como fizeram voce" in normalized or "fale sobre você" in normalized or "me fale sobre você" in normalized or "me fale sobre voce" in normalized:
+            return IntentResult("creator")
         greeting_tokens = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite"]
         robo_markers = [
             "kidrobo", "kid robo", "robô", "robo", "robota", "hobo", "hubo", "jubo", "de robo", "de robô",
@@ -28,8 +30,6 @@ class IntentClassifier:
             return IntentResult("name")
         if "quantos anos" in normalized or "sua idade" in normalized or "você tem quantos anos" in normalized:
             return IntentResult("age")
-        if "quem fez você" in normalized or "quem te fez" in normalized or "quem criou você" in normalized or "quem criou voce" in normalized or "como você foi feito" in normalized or "como voce foi feito" in normalized or "como você foi criado" in normalized or "como voce foi criado" in normalized or "como fizeram você" in normalized or "como fizeram voce" in normalized or "fale sobre você" in normalized or "me fale sobre você" in normalized or "me fale sobre voce" in normalized:
-            return IntentResult("creator")
         if "você é de verdade" in normalized or "voce e de verdade" in normalized or "você é um robô de verdade" in normalized or "voce e um robo de verdade" in normalized:
             return IntentResult("real_robot")
         if "você é meu amigo" in normalized or "voce e meu amigo" in normalized or "quer ser meu amigo" in normalized:
